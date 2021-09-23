@@ -3,7 +3,7 @@ import { ContDashboard } from './styles';
 import ContactPanel from '../components/ContactPanel';
 import MessagePanel from '../components/MessagePanel';
 
-function Dashboard() {
+export default function Dashboard() {
   return (
     <ContDashboard>
       <ContactPanel />
@@ -11,5 +11,3 @@ function Dashboard() {
     </ContDashboard>
   );
 }
-
-export default Dashboard;
