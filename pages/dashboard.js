@@ -9,7 +9,23 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    socket.connect();
+    const sessionID = localStorage.getItem('sessionID');
+
+    if (sessionID) {
+      socket.auth = { sessionID };
+      socket.connect();
+    } else {
+      Router.replace('/');
+    }
+
+    socket.on('session', ({ sessionID, userID }) => {
+      // attach the session ID to the next reconnection attempts
+      socket.auth = { sessionID };
+      // store it in the localStorage
+      localStorage.setItem('sessionID', sessionID);
+      // save the ID of the user
+      socket.userID = userID;
+    });
 
     socket.on('connect', () => {
       const usersUpdated = users.map((user) => {
@@ -31,27 +47,40 @@ export default function Dashboard() {
       setUsers(usersUpdated);
     });
 
-    socket.on('users', (users) => {
-      users.forEach((user) => {
-        user.self = user.userID === socket.id;
+    socket.on('users', (allUsers) => {
+      allUsers.forEach((user) => {
+        const updatedUsers = users.map((single) => {
+          if (single.userID === user.userID) {
+            single.connected = user.connected;
+          }
+          return single;
+        });
+
+        setUsers(updatedUsers);
+        user.self = user.userID === socket.userID;
         initReactiveProperties(user);
       });
       // put the current user first, and then sort by username
-      users.sort((a, b) => {
+      allUsers.sort((a, b) => {
         if (a.self) return -1;
         if (b.self) return 1;
         if (a.username < b.username) return -1;
         return a.username > b.username ? 1 : 0;
       });
 
-      setUsers(users);
+      setUsers(allUsers);
     });
 
     socket.on('user connected', (user) => {
+      const updatedUser = users.map((single) => {
+        if (single.userID === user.userID) single.connected = true;
+        return single;
+      });
+
+      setUsers(updatedUser);
+
       initReactiveProperties(user);
-
       users.push(user);
-
       setUsers([...users]);
     });
 
@@ -64,11 +93,12 @@ export default function Dashboard() {
 
     socket.on('private message', ({ content, from }) => {
       const updatedObject = users.map((user) => {
-        if (user.userID === from) {
+        const fromSelf = socket.userID === from;
+        if (user.userID === (fromSelf ? to : from)) {
           if (user.userID === selectedUser.userID) {
             user.messages = [...selectedUser.messages];
           }
-          user.messages.push({ content, fromSelf: false });
+          user.messages.push({ content, fromSelf });
         }
 
         if (user.userID !== selectedUser.userID) {
@@ -94,7 +124,6 @@ export default function Dashboard() {
   });
 
   const initReactiveProperties = (user) => {
-    user.connected = true;
     user.messages = [];
     user.hasNewMessages = false;
   };

@@ -18,5 +18,17 @@ export const Detail = styled.details`
     padding: 10px 0 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    position: relative;
+  }
+
+  & p span::after {
+    content: '';
+    position: absolute;
+    background-color: rgb(164, 226, 19);
+    border-radius: 50%;
+    top: 17px;
+    left: 8px;
+    width: 10px;
+    height: 10px;
   }
 `;

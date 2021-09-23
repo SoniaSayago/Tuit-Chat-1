@@ -10,9 +10,9 @@ function ContactList({ category, list, onSelectUser }) {
           onClick={() => onSelectUser(element)}
           className="hover:bg-purple-400"
         >
-          <span className={element.connected ? 'text-green-600' : 'text-gray-600'}>
-            &#8226;
-          </span>
+          <span
+            className={element.connected ? 'text-green-600 mr-2' : 'text-gray-600 mr-2'}
+          ></span>
           {element.username}
         </p>
       ))}

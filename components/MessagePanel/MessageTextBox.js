@@ -1,4 +1,5 @@
-import { TextArea } from './styles';
+import { useState } from 'react';
+import { FormTextArea } from './styles';
 
 export default function MessageBox({ onMessage }) {
   const [content, setContent] = useState('');

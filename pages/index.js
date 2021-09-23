@@ -12,6 +12,15 @@ export default function SignIn() {
   const passwordRef = useRef(null);
 
   useEffect(() => {
+    const sessionID = localStorage.getItem('sessionID');
+
+    if (sessionID) {
+      socket.auth = { sessionID };
+      Router.replace('/dashboard');
+    } else {
+      Router.replace('/');
+    }
+
     socket.on('connect_error', (err) => {
       if (err.message === 'invalid username') {
         this.usernameAlreadySelected = false;
@@ -38,10 +47,9 @@ export default function SignIn() {
       }),
     });
 
-    // TODO Cambiar en el back esta respuesta
     const user = await resp.json();
 
-    socket.auth = { username: 'PRUEBA' };
+    socket.auth = { username: user.name, id: user.id };
 
     if (resp.ok) Router.replace('/dashboard');
   };

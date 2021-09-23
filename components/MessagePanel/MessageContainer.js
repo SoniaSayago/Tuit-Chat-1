@@ -3,7 +3,7 @@ import Message from './Message';
 
 import { ContainerAllMessages } from './styles';
 
-export default function MessageContainer() {
+export default function MessageContainer({ userSelected }) {
   return (
     <ContainerAllMessages>
       {userSelected &&

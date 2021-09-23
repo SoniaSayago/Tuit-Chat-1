@@ -8,7 +8,9 @@ export default function MessagePanel({ userSelected, onMessage }) {
     <Container>
       <ContainerHeader>
         <div>
-          <h3>{userSelected ? userSelected.username : 'Channel by default'}</h3>
+          <h1 className="m-0 text-xl font-bold">
+            {userSelected ? userSelected.username : 'Channel by default'}
+          </h1>
           <span># members</span>
         </div>
 

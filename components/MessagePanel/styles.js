@@ -92,13 +92,22 @@ export const SettingMessage = styled.div`
   }
 `;
 
-export const TextArea = styled.textarea`
-  border-radius: 5px;
-  padding: 10px 12px;
-  font-family: 'Glory', sans-serif;
-  border-color: rgb(124, 58, 237);
+export const FormTextArea = styled.form`
+  width: 100%;
+  margin-top: 20px;
 
-  :focus {
+  & textarea {
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px 12px;
+    font-family: 'Glory', sans-serif;
+  }
+
+  & input {
+    cursor: pointer;
+  }
+
+  & textarea:focus {
     outline: none;
     border-color: rgb(124, 58, 237);
   }
@@ -111,7 +120,6 @@ export const Separator = styled.p`
   position: relative;
   margin: 6px 0 6px;
   padding: 8px 0;
-  color: rgb(124, 58, 237);
 
   ::after {
     content: '';
