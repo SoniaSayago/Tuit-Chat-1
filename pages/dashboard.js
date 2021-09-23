@@ -1,15 +1,22 @@
 import { ContDashboard } from './styles';
-
 import ContactPanel from '../components/ContactPanel';
 import MessagePanel from '../components/MessagePanel';
+import fetch from 'isomorphic-unfetch';
 
-function Dashboard() {
+export default function Dashboard({name}) {
   return (
+    <>
     <ContDashboard>
       <ContactPanel />
-      <MessagePanel />
+      <MessagePanel name={JSON.stringify(name)}/>
     </ContDashboard>
+    </>
   );
 }
 
-export default Dashboard;
+Dashboard.getInitialProps = async () => {
+  const res = await fetch('https://slack-chats.herokuapp.com/users');
+  const data = await res.json();
+
+  return { name: data };
+  }

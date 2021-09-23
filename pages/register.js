@@ -1,9 +1,32 @@
 import { LockClosedIcon, UserIcon } from '@heroicons/react/solid';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-// import logo from '../public/assets/logo.svg';
+import logo from '../public/assets/logo.svg';
+import Router from 'next/router';
 
 export default function SignUp() {
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const [message, setMessage] = useState(null);
+
+    async function handleSignUp(){
+      const res = await fetch('https://slack-chats.herokuapp.com/users', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: nameRef.current.value,
+          email: emailRef.current.value,
+          password: passwordRef.current.value,
+        })
+      });
+      const data = await res.json();
+      setMessage(data.message);
+      // return { users: data };
+    }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -21,7 +44,7 @@ export default function SignUp() {
             </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" action="#" method="POST">
+        <form className="mt-8 space-y-6" action="#" method="POST" onSubmit={handleSignUp}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -31,6 +54,7 @@ export default function SignUp() {
               <input
                 id="name-user"
                 name="name"
+                ref={nameRef}
                 type="name"
                 autoComplete="text"
                 required
@@ -45,6 +69,7 @@ export default function SignUp() {
               <input
                 id="email-address"
                 name="email"
+                ref={emailRef}
                 type="email"
                 autoComplete="email"
                 required
@@ -58,6 +83,7 @@ export default function SignUp() {
               </label>
               <input
                 id="password"
+                ref={passwordRef}
                 name="password"
                 type="password"
                 autoComplete="current-password"
