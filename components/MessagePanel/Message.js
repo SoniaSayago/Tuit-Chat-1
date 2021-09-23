@@ -4,7 +4,7 @@ import { ContainerMessage, PhotoProfile, MessageInfo, SettingMessage } from './s
 
 import avatar from '../../assets/user.png';
 
-function Message() {
+function Message({ message, author }) {
   return (
     <ContainerMessage className="hover:bg-purple-200">
       <PhotoProfile>
@@ -14,14 +14,14 @@ function Message() {
       <MessageInfo>
         <div>
           <p className="font-semibold">
-            <span>User name</span>
+            <span>{author}</span>
             <span>5:35 PM</span>
           </p>
 
           <SettingMessage>. . .</SettingMessage>
         </div>
 
-        <p>message</p>
+        <p>{message}</p>
       </MessageInfo>
     </ContainerMessage>
   );

@@ -1,7 +1,27 @@
 import { TextArea } from './styles';
 
-function MessageBox() {
-  return <TextArea rows="3" placeholder="Jot something down" className="bg-purple-100" />;
-}
+export default function MessageBox({ onMessage }) {
+  const [content, setContent] = useState('');
 
-export default MessageBox;
+  const onChangeContent = (event) => {
+    setContent(event.target.value);
+  };
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+
+    onMessage(content);
+  };
+
+  return (
+    <FormTextArea onSubmit={onSubmit}>
+      <textarea
+        rows="3"
+        placeholder="Jot something down"
+        value={content}
+        onChange={onChangeContent}
+      />
+      <input type="submit" value="Send Message" />
+    </FormTextArea>
+  );
+}

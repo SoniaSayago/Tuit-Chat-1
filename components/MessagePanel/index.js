@@ -3,12 +3,12 @@ import MessageTextBox from './MessageTextBox';
 
 import { Container, ContainerHeader, ContainerBody } from './styles';
 
-function MessagePanel() {
+export default function MessagePanel({ userSelected, onMessage }) {
   return (
     <Container>
       <ContainerHeader>
         <div>
-          <h1 className="m-0 text-xl font-bold">Channel name</h1>
+          <h3>{userSelected ? userSelected.username : 'Channel by default'}</h3>
           <span># members</span>
         </div>
 
@@ -16,11 +16,9 @@ function MessagePanel() {
       </ContainerHeader>
 
       <ContainerBody>
-        <MessageContainer />
-        <MessageTextBox />
+        <MessageContainer userSelected={userSelected} />
+        <MessageTextBox onMessage={onMessage} />
       </ContainerBody>
     </Container>
   );
 }
-
-export default MessagePanel;

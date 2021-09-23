@@ -3,12 +3,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../public/assets/logo.svg';
 import Head from 'next/head';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Router from 'next/router';
+import socket from '../socket';
 
 export default function SignIn() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+
+  useEffect(() => {
+    socket.on('connect_error', (err) => {
+      if (err.message === 'invalid username') {
+        this.usernameAlreadySelected = false;
+      }
+
+      console.log(`connect_error due to ${err}`);
+      socket.off('connect_error');
+    });
+    return () => {
+      socket.off('connect_error');
+    };
+  }, []);
 
   const handleLogIn = async (e) => {
     e.preventDefault();
@@ -22,6 +37,11 @@ export default function SignIn() {
         password: passwordRef.current.value,
       }),
     });
+
+    // TODO Cambiar en el back esta respuesta
+    const user = await resp.json();
+
+    socket.auth = { username: 'PRUEBA' };
 
     if (resp.ok) Router.replace('/dashboard');
   };

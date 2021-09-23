@@ -1,12 +1,21 @@
 import { Detail } from './styles';
 
-function ContactList({ category }) {
+function ContactList({ category, list, onSelectUser }) {
   return (
     <Detail open>
       <summary>{category}</summary>
-      <p className="hover:bg-purple-400">Name 1</p>
-      <p className="hover:bg-purple-400">Name 2</p>
-      <p className="hover:bg-purple-400">Name 3</p>
+      {list.map((element, index) => (
+        <p
+          key={index}
+          onClick={() => onSelectUser(element)}
+          className="hover:bg-purple-400"
+        >
+          <span className={element.connected ? 'text-green-600' : 'text-gray-600'}>
+            &#8226;
+          </span>
+          {element.username}
+        </p>
+      ))}
     </Detail>
   );
 }
