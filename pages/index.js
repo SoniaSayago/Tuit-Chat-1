@@ -12,19 +12,34 @@ export default function SignIn() {
   const passwordRef = useRef(null);
 
   useEffect(() => {
-    const sessionID = localStorage.getItem('sessionID');
+    // const sessionID = localStorage.getItem('sessionID');
 
-    if (sessionID) {
-      socket.auth = { sessionID };
-      Router.replace('/dashboard');
-    } else {
-      Router.replace('/');
-    }
+    // if (sessionID) {
+    //   socket.auth = { sessionID };
+    //   Router.replace('/dashboard');
+    // } else {
+    //   Router.replace('/');
+    // }
+
+    // if (sessionID) {
+    //   socket.auth = { sessionID };
+    //   socket.connect();
+    //   Router.replace('/dashboard');
+    // }
+
+    // socket.on('session', ({ sessionID, userID }) => {
+    //   // attach the session ID to the next reconnection attempts
+    //   socket.auth = { sessionID };
+    //   // store it in the localStorage
+    //   localStorage.setItem('sessionID', sessionID);
+    //   // save the ID of the user
+    //   socket.userID = userID;
+    // });
 
     socket.on('connect_error', (err) => {
-      if (err.message === 'invalid username') {
-        this.usernameAlreadySelected = false;
-      }
+      // if (err.message === 'invalid username') {
+      //   this.usernameAlreadySelected = false;
+      // }
 
       console.log(`connect_error due to ${err}`);
       socket.off('connect_error');
@@ -36,7 +51,7 @@ export default function SignIn() {
 
   const handleLogIn = async (e) => {
     e.preventDefault();
-    const resp = await fetch('http://localhost:8080/auth', {
+    const resp = await fetch(`/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,7 +64,11 @@ export default function SignIn() {
 
     const user = await resp.json();
 
-    socket.auth = { username: user.name, id: user.id };
+    console.log(user);
+    console.log(resp.status);
+
+    socket.auth = { username: user.name, id: user.sub };
+    socket.connect();
 
     if (resp.ok) Router.replace('/dashboard');
   };

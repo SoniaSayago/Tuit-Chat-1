@@ -1,10 +1,13 @@
 import { io } from 'socket.io-client';
 
-const URL = 'http://localhost:8080';
-const socket = io(URL, { autoConnect: false });
+const URL = process.env.BASE_URL;
+const socket = io(URL, {
+  path: '/api/socketio',
+  autoConnect: false,
+});
 
-// socket.onAny((event, ...args) => {
-//   console.log(event, args);
-// });
+socket.onAny((event, ...args) => {
+  console.log(event, args);
+});
 
 export default socket;

@@ -1,5 +1,26 @@
 import { useState } from 'react';
-import { FormTextArea } from './styles';
+import styled from 'styled-components';
+
+const FormTextArea = styled.form`
+  width: 100%;
+  margin-top: 20px;
+
+  & textarea {
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px 12px;
+    font-family: 'Glory', sans-serif;
+  }
+
+  & input {
+    cursor: pointer;
+  }
+
+  & textarea:focus {
+    outline: none;
+    border-color: rgb(124, 58, 237);
+  }
+`;
 
 export default function MessageBox({ onMessage }) {
   const [content, setContent] = useState('');

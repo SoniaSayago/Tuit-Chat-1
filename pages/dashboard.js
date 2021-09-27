@@ -1,21 +1,27 @@
-import { ContDashboard } from './styles';
 import socket from '../socket';
 import { useEffect, useState } from 'react';
 import ContactPanel from '../components/ContactPanel';
 import MessagePanel from '../components/MessagePanel';
+import auth from '../api/authenticate';
+import styled from 'styled-components';
 
-export default function Dashboard() {
+const ContDashboard = styled.div`
+  display: flex;
+  height: 100vh;
+`;
+
+export default function Dashboard({ user }) {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const sessionID = localStorage.getItem('sessionID');
 
+    // socket.connect();
+
     if (sessionID) {
       socket.auth = { sessionID };
       socket.connect();
-    } else {
-      Router.replace('/');
     }
 
     socket.on('session', ({ sessionID, userID }) => {
@@ -91,7 +97,7 @@ export default function Dashboard() {
       });
     });
 
-    socket.on('private message', ({ content, from }) => {
+    socket.on('private message', ({ content, from, to }) => {
       const updatedObject = users.map((user) => {
         const fromSelf = socket.userID === from;
         if (user.userID === (fromSelf ? to : from)) {
@@ -159,3 +165,10 @@ export default function Dashboard() {
     </ContDashboard>
   );
 }
+
+Dashboard.getInitialProps = async (ctx) => {
+  const user = await auth('/api/user', ctx);
+
+  console.log(user);
+  return { user };
+};
