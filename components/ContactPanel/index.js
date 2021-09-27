@@ -1,7 +1,13 @@
 import ContactList from './ContactList';
 import Image from 'next/image';
 import logo from '../../public/assets/logo.svg';
-import { Container } from './styles';
+import styled from 'styled-components';
+
+const Container = styled.section`
+  width: 260px;
+  padding: 25px;
+  color: white;
+`;
 
 function ContactPanel() {
   return (

@@ -1,7 +1,29 @@
 import MessageContainer from './MessageContainer';
 import MessageTextBox from './MessageTextBox';
+import styled from 'styled-components';
 
-import { Container, ContainerHeader, ContainerBody } from './styles';
+const Container = styled.section`
+  flex: 1 1 auto;
+  padding: 25px;
+`;
+
+const ContainerHeader = styled.div`
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & span {
+    font-size: 0.9rem;
+  }
+`;
+
+const ContainerBody = styled.div`
+  height: calc(100% - 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
 
 function MessagePanel() {
   return (
