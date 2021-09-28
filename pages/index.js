@@ -3,74 +3,50 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../public/assets/logo.svg';
 import Head from 'next/head';
-import { useEffect, useRef } from 'react';
-import Router from 'next/router';
-import socket from '../socket';
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { signIn } from 'next-auth/react';
 
 export default function SignIn() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
 
-  useEffect(() => {
-    // const sessionID = localStorage.getItem('sessionID');
+  const [loginError, setLoginError] = useState('');
 
-    // if (sessionID) {
-    //   socket.auth = { sessionID };
-    //   Router.replace('/dashboard');
-    // } else {
-    //   Router.replace('/');
-    // }
+  const router = useRouter();
 
-    // if (sessionID) {
-    //   socket.auth = { sessionID };
-    //   socket.connect();
-    //   Router.replace('/dashboard');
-    // }
-
-    // socket.on('session', ({ sessionID, userID }) => {
-    //   // attach the session ID to the next reconnection attempts
-    //   socket.auth = { sessionID };
-    //   // store it in the localStorage
-    //   localStorage.setItem('sessionID', sessionID);
-    //   // save the ID of the user
-    //   socket.userID = userID;
-    // });
-
-    socket.on('connect_error', (err) => {
-      // if (err.message === 'invalid username') {
-      //   this.usernameAlreadySelected = false;
-      // }
-
-      console.log(`connect_error due to ${err}`);
-      socket.off('connect_error');
-    });
-    return () => {
-      socket.off('connect_error');
-    };
-  }, []);
+  // useEffect(() => {
+  //   socket.on('connect_error', (err) => {
+  //     console.log(`connect_error due to ${err}`);
+  //     socket.off('connect_error');
+  //   });
+  //   return () => {
+  //     socket.off('connect_error');
+  //   };
+  // }, []);
 
   const handleLogIn = async (e) => {
     e.preventDefault();
-    const resp = await fetch(`/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: emailRef.current.value,
-        password: passwordRef.current.value,
-      }),
+    e.stopPropagation();
+
+    signIn('credentials', {
+      email: emailRef.current.value,
+      password: passwordRef.current.value,
+      callbackUrl: `${window.location.origin}/dashboard`,
+      redirect: false,
+    }).then((result) => {
+      if (result.error !== null) {
+        if (result.status === 401) {
+          setLoginError(
+            'Your username/password combination was incorrect. Please try again'
+          );
+        } else {
+          setLoginError(result.error);
+        }
+      } else {
+        router.push(result.url);
+      }
     });
-
-    const user = await resp.json();
-
-    console.log(user);
-    console.log(resp.status);
-
-    socket.auth = { username: user.name, id: user.sub };
-    socket.connect();
-
-    if (resp.ok) Router.replace('/dashboard');
   };
 
   return (
@@ -100,6 +76,7 @@ export default function SignIn() {
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleLogIn}>
+            {loginError}
             <input type="hidden" name="remember" defaultValue="true" />
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
