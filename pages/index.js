@@ -23,14 +23,20 @@ export default function SignIn() {
           password: passwordRef.current.value,
         })
       });
+
+        // use router for authentication & redirect
+      if(res.statusCode === '200'){
+        Router.replace('/Dashboard');
+        return {};
+      }
+      if(res.statusCode === '404'){
+        setMessage('Invalid Credentials');
+        Router.replace('/')
+        return {};
+      } 
       const data = await res.json();
       setMessage(data.message);
       // return { users: data };
-      console.log(data);
-      // use router for authentication & redirect
-      if(data.message === 'success'){
-        Router.push('/Dashboard');
-      }
     }
 
   return (
