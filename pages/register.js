@@ -27,8 +27,6 @@ export default function SignUp() {
       }),
     });
 
-    console.log(resp);
-
     if (resp.ok) setLoginError('Now you can log in :D');
     else setLoginError('Error');
   };
