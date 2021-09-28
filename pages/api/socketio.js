@@ -66,8 +66,6 @@ const socket = async (req, res) => {
       // join the "userID" room
       socket.join(socket.userID);
 
-      console.log('join', socket.userID);
-
       // fetch existing users
       const users = [];
       sessionStore.findAllSessions().forEach((session) => {
@@ -78,7 +76,6 @@ const socket = async (req, res) => {
         });
       });
 
-      console.log(users);
       socket.emit('users', users);
       // const mapSockets = io.of('/').sockets;
       // mapSockets.forEach((value, key) => {

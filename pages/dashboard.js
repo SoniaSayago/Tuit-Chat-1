@@ -16,20 +16,11 @@ export default function Dashboard() {
 
   const { data: session, status } = useSession();
 
-  // const fetchData = async () => {
-  //   const res = await fetch('/api/secret');
-  //   const json = await res.json();
-
-  //   if (json.content) setContent(json.content);
-  // };
-
   useEffect(() => {
-    // fetchData();
-
     const sessionID = localStorage.getItem('sessionID');
 
     if (sessionID) {
-      socket.auth = { sessionID };
+      socket.auth = { username: session.user.name, userID: session.user.id, sessionID };
     } else {
       socket.auth = { username: session.user.name, userID: session.user.id };
     }
@@ -46,11 +37,15 @@ export default function Dashboard() {
     });
 
     socket.on('connect', () => {
+      console.log('se ha conectado');
       const usersUpdated = users.map((user) => {
         if (user.self) user.connected = true;
 
         return user;
       });
+
+      console.log('en connect');
+      console.log(users);
 
       setUsers(usersUpdated);
     });
@@ -58,9 +53,11 @@ export default function Dashboard() {
     socket.on('disconnect', () => {
       const usersUpdated = users.map((user) => {
         if (user.self) user.connected = false;
-
         return user;
       });
+
+      console.log('desconectado');
+      console.log(users);
 
       setUsers(usersUpdated);
     });
@@ -91,9 +88,7 @@ export default function Dashboard() {
 
     socket.on('user connected', (user) => {
       let isNewUser = false;
-
       console.log(user);
-      console.log(users);
 
       const updatedUser = users.map((single) => {
         if (single.userID === user.userID) {
@@ -118,13 +113,14 @@ export default function Dashboard() {
         return user;
       });
 
+      console.log('*****');
+      console.log(updated);
+
       setUsers([...updated]);
     });
 
     socket.on('private message', ({ content, from, to }) => {
       const updatedObject = users.map((user) => {
-        console.log('///////////////////////////');
-        console.log(user);
         const fromSelf = socket.userID === from;
         if (user.userID === (fromSelf ? to : from)) {
           if (user.userID === selectedUser.userID) {
@@ -223,8 +219,6 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
-  // socket.auth = { username: session.user.name, userID: session.user.id };
 
   return {
     props: { session },

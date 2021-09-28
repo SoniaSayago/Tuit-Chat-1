@@ -14,11 +14,14 @@ const Detail = styled.details`
     cursor: pointer;
     position: relative;
   }
+`;
 
-  & p span::after {
+const Connected = styled.span`
+  ::after {
     content: '';
     position: absolute;
-    background-color: rgb(164, 226, 19);
+    background-color: ${({ connected }) => (connected ? 'rgb(164, 226, 19)' : 'none')};
+    border: ${({ connected }) => (connected ? 'none' : '2px solid rgb(196, 196, 196)')};
     border-radius: 50%;
     top: 17px;
     left: 8px;
@@ -28,6 +31,8 @@ const Detail = styled.details`
 `;
 
 function ContactList({ category, list, onSelectUser }) {
+  console.log('Y en la lista....');
+  console.log(list);
   return (
     <Detail open>
       <summary>{category}</summary>
@@ -37,9 +42,7 @@ function ContactList({ category, list, onSelectUser }) {
           onClick={() => onSelectUser(element)}
           className="hover:bg-purple-400"
         >
-          <span
-            className={element.connected ? 'text-green-600 mr-2' : 'text-gray-600 mr-2'}
-          ></span>
+          <Connected className="mr-2" connected={element.connected}></Connected>
           {element.username}
         </p>
       ))}
