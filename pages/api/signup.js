@@ -1,4 +1,4 @@
-import db from '../../../lib/database';
+import prisma from '../../lib/database';
 import bcrypt from 'bcrypt';
 
 export default async function signup(req, res) {
@@ -9,12 +9,15 @@ export default async function signup(req, res) {
       const salt = await bcrypt.genSalt(10);
       const passwordEncrypted = await bcrypt.hash(password, salt);
 
-      const response = await db(
-        'INSERT INTO users(name, email, password) VALUES($1, $2, $3) RETURNING *',
-        [name, email, passwordEncrypted]
-      );
+      const resp = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: passwordEncrypted,
+        },
+      });
 
-      res.status(201).json(response.rows);
+      res.status(201).json(resp);
     } catch (error) {
       res.status(500).json({ message: 'Something went wrong' });
     }

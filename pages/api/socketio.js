@@ -43,7 +43,7 @@ const socket = async (req, res) => {
 
       // create new session
       socket.sessionID = randomId();
-      socket.userID = userID;
+      socket.userID = randomId();
       socket.username = username;
       next();
     });

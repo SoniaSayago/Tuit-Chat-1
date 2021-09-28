@@ -2,27 +2,43 @@ import socket from '../socket';
 import { useEffect, useState } from 'react';
 import ContactPanel from '../components/ContactPanel';
 import MessagePanel from '../components/MessagePanel';
-import auth from '../api/authenticate';
 import styled from 'styled-components';
+import { useSession, getSession } from 'next-auth/react';
 
 const ContDashboard = styled.div`
   display: flex;
   height: 100vh;
 `;
 
-export default function Dashboard({ user }) {
+export default function Dashboard() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  useEffect(() => {
-    const sessionID = localStorage.getItem('sessionID');
+  const { data: session, status } = useSession();
+  console.log('-------------------------------------');
+  console.log(session);
 
-    // socket.connect();
+  // const fetchData = async () => {
+  //   const res = await fetch('/api/secret');
+  //   const json = await res.json();
+
+  //   if (json.content) setContent(json.content);
+  // };
+
+  useEffect(() => {
+    // fetchData();
+    console.log('Session de la linea 20 en dashboard');
+    console.log(session);
+
+    const sessionID = localStorage.getItem('sessionID');
 
     if (sessionID) {
       socket.auth = { sessionID };
-      socket.connect();
+    } else {
+      socket.auth = { username: session.user.name, userID: session.user.id };
     }
+
+    socket.connect();
 
     socket.on('session', ({ sessionID, userID }) => {
       // attach the session ID to the next reconnection attempts
@@ -78,27 +94,37 @@ export default function Dashboard({ user }) {
     });
 
     socket.on('user connected', (user) => {
+      let isUser = false;
       const updatedUser = users.map((single) => {
-        if (single.userID === user.userID) single.connected = true;
+        if (single.userID === user.userID) {
+          single.connected = true;
+          isUser = true;
+        }
         return single;
       });
 
       setUsers(updatedUser);
 
-      initReactiveProperties(user);
-      users.push(user);
-      setUsers([...users]);
+      if (!isUser) {
+        initReactiveProperties(user);
+        users.push(user);
+        setUsers([...users]);
+      }
     });
 
     socket.on('user disconnected', (id) => {
-      users.map((user) => {
+      const updated = users.map((user) => {
         if (user.userID === id) user.connected = false;
         return user;
       });
+
+      setUsers([...updated]);
     });
 
     socket.on('private message', ({ content, from, to }) => {
       const updatedObject = users.map((user) => {
+        console.log('///////////////////////////');
+        console.log(user);
         const fromSelf = socket.userID === from;
         if (user.userID === (fromSelf ? to : from)) {
           if (user.userID === selectedUser.userID) {
@@ -127,7 +153,7 @@ export default function Dashboard({ user }) {
       socket.off('user disconnected');
       socket.off('private message');
     };
-  });
+  }, [session]);
 
   const initReactiveProperties = (user) => {
     user.messages = [];
@@ -166,9 +192,43 @@ export default function Dashboard({ user }) {
   );
 }
 
-Dashboard.getInitialProps = async (ctx) => {
-  const user = await auth('/api/user', ctx);
+// Dashboard.getInitialProps = async (ctx) => {
+//   const user = await auth('/api/user', ctx);
 
-  console.log(user);
-  return { user };
-};
+//   console.log(user);
+//   return { user };
+// };
+
+// export const getServerSideProps = async ({ req }) => {
+//   console.log(req);
+//   console.log('El de arriba es el req.')
+//   const token = req.headers.AUTHORIZATION
+//   const userId = await getUserId(token)
+//   const posts = await prisma.post.findMany({
+//     where: {
+//       author: { id: userId },
+//     },
+//   })
+//   return { props: { posts } }
+// }
+
+export async function getServerSideProps(context) {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+  console.log('La sesión desde api/session');
+  console.log(session);
+
+  socket.auth = { username: session.user.name, userID: session.user.id };
+
+  return {
+    props: { session },
+  };
+}
