@@ -15,8 +15,6 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const { data: session, status } = useSession();
-  console.log('-------------------------------------');
-  console.log(session);
 
   // const fetchData = async () => {
   //   const res = await fetch('/api/secret');
@@ -27,8 +25,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     // fetchData();
-    console.log('Session de la linea 20 en dashboard');
-    console.log(session);
 
     const sessionID = localStorage.getItem('sessionID');
 
@@ -94,18 +90,22 @@ export default function Dashboard() {
     });
 
     socket.on('user connected', (user) => {
-      let isUser = false;
+      let isNewUser = false;
+
+      console.log(user);
+      console.log(users);
+
       const updatedUser = users.map((single) => {
         if (single.userID === user.userID) {
           single.connected = true;
-          isUser = true;
+          isNewUser = true;
         }
         return single;
       });
 
       setUsers(updatedUser);
 
-      if (!isUser) {
+      if (!isNewUser) {
         initReactiveProperties(user);
         users.push(user);
         setUsers([...users]);
@@ -153,7 +153,7 @@ export default function Dashboard() {
       socket.off('user disconnected');
       socket.off('private message');
     };
-  }, [session]);
+  });
 
   const initReactiveProperties = (user) => {
     user.messages = [];
@@ -223,10 +223,8 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  console.log('La sesión desde api/session');
-  console.log(session);
 
-  socket.auth = { username: session.user.name, userID: session.user.id };
+  // socket.auth = { username: session.user.name, userID: session.user.id };
 
   return {
     props: { session },

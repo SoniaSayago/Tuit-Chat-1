@@ -24,7 +24,7 @@ const socket = async (req, res) => {
     io.use((socket, next) => {
       const sessionID = socket.handshake.auth.sessionID;
       const username = socket.handshake.auth.username;
-      const userID = socket.handshake.auth.id;
+      const userID = socket.handshake.auth.userID;
 
       if (sessionID) {
         const session = sessionStore.findSession(sessionID);
@@ -43,7 +43,7 @@ const socket = async (req, res) => {
 
       // create new session
       socket.sessionID = randomId();
-      socket.userID = randomId();
+      socket.userID = userID;
       socket.username = username;
       next();
     });
@@ -66,6 +66,8 @@ const socket = async (req, res) => {
       // join the "userID" room
       socket.join(socket.userID);
 
+      console.log('join', socket.userID);
+
       // fetch existing users
       const users = [];
       sessionStore.findAllSessions().forEach((session) => {
@@ -75,6 +77,8 @@ const socket = async (req, res) => {
           connected: session.connected,
         });
       });
+
+      console.log(users);
       socket.emit('users', users);
       // const mapSockets = io.of('/').sockets;
       // mapSockets.forEach((value, key) => {
