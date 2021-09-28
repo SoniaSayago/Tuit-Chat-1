@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db-up": "docker-compose up -d",
+    "db-status": "docker-compose ps",
+    "db-down": "docker-compose down"
   },
   "prisma": {
     "seed": "node ./prisma/seed.js"
