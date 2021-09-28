@@ -3,7 +3,7 @@ import ContactPanel from '../components/ContactPanel';
 import MessagePanel from '../components/MessagePanel';
 import fetch from 'isomorphic-unfetch';
 
-export default function Dashboard({props}) {
+export default function Dashboard({name}) {
   return (
     <>
     <ContDashboard>
