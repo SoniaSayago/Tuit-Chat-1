@@ -42,10 +42,10 @@ export default function SignUp() {
             Sign up to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
+            Or Already have a tuit Account?{' '}
             <Link href="/">
               <a className="font-medium text-purple-600 hover:text-purple-500">
-                Have an account? Sign In
+                Sign In
               </a>
             </Link>
           </p>
@@ -65,7 +65,7 @@ export default function SignUp() {
                 ref={nameRef}
                 autoComplete="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                className="mt-2 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                 placeholder="Your name"
               />
             </div>
@@ -95,11 +95,31 @@ export default function SignUp() {
                 ref={passwordRef}
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                className="mt-2 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
             </div>
           </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+              />
+              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+                I agree with the{' '}
+                <Link href="https://github.com/Andy164/Tuit-Chat">
+                  <a className="font-medium text-purple-600 hover:text-purple-500">
+                  Terms of Service
+                  </a>
+                </Link>
+              </label>
+            </div>
+          </div>
+          
           <div>
             <button
               type="submit"
