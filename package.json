@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3000",
+    "start": "next start -p $PORT",
     "lint": "next lint",
     "db-up": "docker-compose up -d",
     "db-status": "docker-compose ps",
-    "db-down": "docker-compose down"
+    "db-down": "docker-compose down",
+    "heroku-postbuild": "npm run build"
   },
   "prisma": {
     "seed": "node ./prisma/seed.js"
