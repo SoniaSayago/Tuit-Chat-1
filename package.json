@@ -5,12 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "next start",
     "lint": "next lint",
     "db-up": "docker-compose up -d",
     "db-status": "docker-compose ps",
-    "db-down": "docker-compose down",
-    "heroku-postbuild": "npm run build"
+    "db-down": "docker-compose down"
   },
   "prisma": {
     "seed": "node ./prisma/seed.js"
@@ -36,10 +35,10 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.3.4",
+    "babel-plugin-styled-components": "^1.13.2",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "postcss": "^8.3.6",
-    "prisma": "^3.1.1",
-    "babel-plugin-styled-components": "^1.13.2"
+    "prisma": "^3.1.1"
   }
 }
