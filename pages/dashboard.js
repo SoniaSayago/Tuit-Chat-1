@@ -11,8 +11,18 @@ const ContDashboard = styled.div`
 `;
 
 export default function Dashboard() {
+  const [myRooms, setMyRooms] = useState([
+    {
+      ID: 1,
+      name: 'general',
+      messages: [],
+      isChannel: true,
+      // hasNewMessages: false,
+    },
+  ]);
+
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(myRooms[0]);
 
   const { data: session, status } = useSession();
 
@@ -20,32 +30,28 @@ export default function Dashboard() {
     const sessionID = localStorage.getItem('sessionID');
 
     if (sessionID) {
-      socket.auth = { username: session.user.name, userID: session.user.id, sessionID };
+      socket.auth = { name: session.user.name, ID: session.user.id, sessionID };
     } else {
-      socket.auth = { username: session.user.name, userID: session.user.id };
+      socket.auth = { name: session.user.name, ID: session.user.id };
     }
 
     socket.connect();
 
-    socket.on('session', ({ sessionID, userID }) => {
+    socket.on('session', ({ sessionID, ID }) => {
       // attach the session ID to the next reconnection attempts
       socket.auth = { sessionID };
       // store it in the localStorage
       localStorage.setItem('sessionID', sessionID);
       // save the ID of the user
-      socket.userID = userID;
+      socket.ID = ID;
     });
 
     socket.on('connect', () => {
-      console.log('se ha conectado');
       const usersUpdated = users.map((user) => {
         if (user.self) user.connected = true;
 
         return user;
       });
-
-      console.log('en connect');
-      console.log(users);
 
       setUsers(usersUpdated);
     });
@@ -56,31 +62,28 @@ export default function Dashboard() {
         return user;
       });
 
-      console.log('desconectado');
-      console.log(users);
-
       setUsers(usersUpdated);
     });
 
     socket.on('users', (allUsers) => {
       allUsers.forEach((user) => {
         const updatedUsers = users.map((single) => {
-          if (single.userID === user.userID) {
+          if (single.ID === user.ID) {
             single.connected = user.connected;
           }
           return single;
         });
 
         setUsers(updatedUsers);
-        user.self = user.userID === socket.userID;
+        user.self = user.ID === socket.ID;
         initReactiveProperties(user);
       });
       // put the current user first, and then sort by username
       allUsers.sort((a, b) => {
         if (a.self) return -1;
         if (b.self) return 1;
-        if (a.username < b.username) return -1;
-        return a.username > b.username ? 1 : 0;
+        if (a.name < b.name) return -1;
+        return a.name > b.name ? 1 : 0;
       });
 
       setUsers(allUsers);
@@ -88,10 +91,9 @@ export default function Dashboard() {
 
     socket.on('user connected', (user) => {
       let isNewUser = false;
-      console.log(user);
 
       const updatedUser = users.map((single) => {
-        if (single.userID === user.userID) {
+        if (single.ID === user.ID) {
           single.connected = true;
           isNewUser = true;
         }
@@ -109,27 +111,24 @@ export default function Dashboard() {
 
     socket.on('user disconnected', (id) => {
       const updated = users.map((user) => {
-        if (user.userID === id) user.connected = false;
+        if (user.ID === id) user.connected = false;
         return user;
       });
-
-      console.log('*****');
-      console.log(updated);
 
       setUsers([...updated]);
     });
 
-    socket.on('private message', ({ content, from, to }) => {
+    socket.on('private message', ({ content, to, from }) => {
       const updatedObject = users.map((user) => {
-        const fromSelf = socket.userID === from;
-        if (user.userID === (fromSelf ? to : from)) {
-          if (user.userID === selectedUser.userID) {
+        const fromSelf = socket.ID === from;
+        if (user.ID === (fromSelf ? to : from)) {
+          if (user.ID === selectedUser.ID) {
             user.messages = [...selectedUser.messages];
           }
           user.messages.push({ content, fromSelf });
         }
 
-        if (user.userID !== selectedUser.userID) {
+        if (user.ID !== selectedUser.ID) {
           user.hasNewMessages = true;
         } else {
           setSelectedUser(user);
@@ -140,6 +139,25 @@ export default function Dashboard() {
 
       setUsers(updatedObject);
     });
+
+    socket.on('new message', ({ content, sender, from, to }) => {
+      const updatedObject = myRooms.map((room) => {
+        if (room.ID === to) {
+          const fromSelf = socket.ID === from;
+          room.messages.push({ content, fromSelf, sender });
+        }
+
+        if (selectedUser.ID === room.ID) {
+          setSelectedUser(room);
+        }
+
+        return room;
+      });
+
+      setMyRooms(updatedObject);
+    });
+
+    socket.emit('join room', 1);
 
     return () => {
       socket.off('connect');
@@ -154,7 +172,10 @@ export default function Dashboard() {
   const initReactiveProperties = (user) => {
     user.messages = [];
     user.hasNewMessages = false;
+    user.isChannel = false;
   };
+
+  // const initReactiveRooms
 
   const handleSelectUser = (user) => {
     setSelectedUser(user);
@@ -162,51 +183,53 @@ export default function Dashboard() {
   };
 
   const handleMessage = (content) => {
-    if (selectedUser) {
+    if (selectedUser && !selectedUser.isChannel) {
       socket.emit('private message', {
         content,
-        to: selectedUser.userID,
+        sender: socket.name,
+        to: selectedUser.ID,
       });
 
       const newMessage = { content, fromSelf: true };
-      const user = { ...selectedUser, messages: [...selectedUser.messages, newMessage] };
+      const userSelected = {
+        ...selectedUser,
+        messages: [...selectedUser.messages, newMessage],
+      };
       const usersUpdated = users.map((user) => {
-        if (user.userID === selectedUser.userID) user.messages.push(newMessage);
+        if (user.ID === selectedUser.ID) user.messages.push(newMessage);
         return user;
       });
 
       setUsers(usersUpdated);
-      setSelectedUser(user);
+      setSelectedUser(userSelected);
+    } else if (selectedUser) {
+      socket.emit('send message', {
+        content,
+        to: selectedUser.ID,
+      });
+
+      const newMessage = { content, fromSelf: true };
+      const roomSelected = {
+        ...selectedUser,
+        messages: [...selectedUser.messages, newMessage],
+      };
+      const roomsUpdated = myRooms.map((room) => {
+        if (room.ID === selectedUser.ID) room.messages.push(newMessage);
+        return room;
+      });
+
+      setMyRooms(roomsUpdated);
+      setSelectedUser(roomSelected);
     }
   };
 
   return (
     <ContDashboard>
-      <ContactPanel users={users} onSelectUser={handleSelectUser} />
+      <ContactPanel users={users} rooms={myRooms} onSelectUser={handleSelectUser} />
       <MessagePanel userSelected={selectedUser} onMessage={handleMessage} />
     </ContDashboard>
   );
 }
-
-// Dashboard.getInitialProps = async (ctx) => {
-//   const user = await auth('/api/user', ctx);
-
-//   console.log(user);
-//   return { user };
-// };
-
-// export const getServerSideProps = async ({ req }) => {
-//   console.log(req);
-//   console.log('El de arriba es el req.')
-//   const token = req.headers.AUTHORIZATION
-//   const userId = await getUserId(token)
-//   const posts = await prisma.post.findMany({
-//     where: {
-//       author: { id: userId },
-//     },
-//   })
-//   return { props: { posts } }
-// }
 
 export async function getServerSideProps(context) {
   const session = await getSession({ req: context.req });

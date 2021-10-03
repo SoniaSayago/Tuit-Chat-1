@@ -15,16 +15,6 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   socket.on('connect_error', (err) => {
-  //     console.log(`connect_error due to ${err}`);
-  //     socket.off('connect_error');
-  //   });
-  //   return () => {
-  //     socket.off('connect_error');
-  //   };
-  // }, []);
-
   const handleLogIn = async (e) => {
     e.preventDefault();
     e.stopPropagation();
