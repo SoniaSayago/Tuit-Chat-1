@@ -34,7 +34,9 @@ CREATE TABLE "User" (
     "name" TEXT,
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
+    "password" TEXT,
     "image" TEXT,
+    "isActive" CHAR(1) NOT NULL DEFAULT E'1',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
