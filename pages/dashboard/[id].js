@@ -16,7 +16,7 @@ const ContDashboard = styled.div`
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Dashboard() {
-  const socket = io(process.env.BASE_URL, {
+  const socket = io('https://tuit-chat-dvullgmja-apenaranda031-misenaeduc.vercel.app/', {
     path: '/api/socketio',
     autoConnect: false,
   });
