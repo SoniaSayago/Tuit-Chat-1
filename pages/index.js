@@ -1,4 +1,4 @@
-import { LockClosedIcon } from '@heroicons/react/solid';
+import { LockClosedIcon, AtSymbolIcon, ChatIcon } from '@heroicons/react/solid';
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../public/assets/logo.svg';
@@ -75,14 +75,22 @@ export default function SignIn() {
               </Link>
             </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleLogIn}>
+          <div className="bg-white max-w-md rounded overflow-hidden shadow-xl p-5">
+          <form className="mt-8 relative space-y-6" onSubmit={handleLogIn}>
             {loginError}
-            <input type="hidden" name="remember" defaultValue="true" />
             <div className="rounded-md shadow-sm -space-y-px">
-              <div>
+              <div className="mt-1 relative rounded-md shadow-sm">
                 <label htmlFor="email-address" className="sr-only">
                   Email address
                 </label>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">
+                  <AtSymbolIcon
+                    className="h-4 w-4 text-purple-450 items-center group-hover:text-purple-500"
+                    aria-hidden="true"
+                  />
+                  </span>
+                </div>
                 <input
                   id="email-address"
                   name="email"
@@ -90,14 +98,22 @@ export default function SignIn() {
                   autoComplete="email"
                   ref={emailRef}
                   required
-                  className="mt-2 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
                   placeholder="Email address"
                 />
               </div>
-              <div>
+              <div className="mt-1 relative rounded-md shadow-sm">
                 <label htmlFor="password" className="sr-only">
                   Password
                 </label>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">
+                  <LockClosedIcon
+                    className="h-4 w-4 text-purple-450 items-center group-hover:text-purple-500"
+                    aria-hidden="true"
+                  />
+                  </span>
+                </div>
                 <input
                   id="password"
                   name="password"
@@ -105,11 +121,11 @@ export default function SignIn() {
                   ref={passwordRef}
                   autoComplete="current-password"
                   required
-                  className="mt-2 appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                  className="focus:ring-indigo-500 mt-2 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
                   placeholder="Password"
                 />
+                </div>
               </div>
-            </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -137,7 +153,7 @@ export default function SignIn() {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <LockClosedIcon
+                  <ChatIcon
                     className="h-5 w-5 text-purple-450 group-hover:text-purple-500"
                     aria-hidden="true"
                   />
@@ -146,6 +162,7 @@ export default function SignIn() {
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </>
