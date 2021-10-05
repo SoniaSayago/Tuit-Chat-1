@@ -5,7 +5,8 @@ console.log('--------------------------------------------');
 console.log(URL);
 const socket = io(URL, {
   path: '/api/socketio',
-  transports: ['websocket'],
+  transports: ['polling', 'websocket'],
+  autoConnect: false,
 });
 
 socket.onAny((event, ...args) => {
