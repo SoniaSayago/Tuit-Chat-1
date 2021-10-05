@@ -1,4 +1,4 @@
-// import socket from '../../socket';
+import socket from '../../socket';
 import { useEffect, useState } from 'react';
 import ContactPanel from '../../components/ContactPanel';
 import MessagePanel from '../../components/MessagePanel';
@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
 import useSwr from 'swr';
 import { useRouter } from 'next/router';
-import { io } from 'socket.io-client';
 
 const ContDashboard = styled.div`
   display: flex;
@@ -16,11 +15,6 @@ const ContDashboard = styled.div`
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Dashboard() {
-  const socket = io('https://tuit-chat-dvullgmja-apenaranda031-misenaeduc.vercel.app/', {
-    path: '/api/socketio',
-    autoConnect: false,
-  });
-
   const [myRooms, setMyRooms] = useState([
     {
       ID: 'ckud67qq400000s95fv33xngb',
