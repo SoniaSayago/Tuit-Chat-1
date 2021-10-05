@@ -76,7 +76,7 @@ export default function SignIn() {
             </p>
           </div>
           <div className="bg-white max-w-md rounded overflow-hidden shadow-xl p-5">
-          <form className="mt-8 relative space-y-6" onSubmit={handleLogIn}>
+          <form className="mt-4 relative space-y-6" onSubmit={handleLogIn}>
             {loginError}
             <div className="rounded-md shadow-sm -space-y-px">
               <div className="mt-1 relative rounded-md shadow-sm">

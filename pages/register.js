@@ -69,12 +69,11 @@ export default function SignUp() {
                 <input
                   id="name"
                   name="name"
-                  type="email"
-                  autoComplete="email"
+                  type="text"
                   ref={nameRef}
                   required
                   className="focus:ring-indigo-500 mt-2 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Full names"
+                  placeholder="Full name"
                 />
               </div>
               <div className="mt-1 relative rounded-md shadow-sm">
