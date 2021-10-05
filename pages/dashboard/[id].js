@@ -1,4 +1,4 @@
-import socket from '../../socket';
+// import socket from '../../socket';
 import { useEffect, useState } from 'react';
 import ContactPanel from '../../components/ContactPanel';
 import MessagePanel from '../../components/MessagePanel';
@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
 import useSwr from 'swr';
 import { useRouter } from 'next/router';
+import { io } from 'socket.io-client';
 
 const ContDashboard = styled.div`
   display: flex;
@@ -15,6 +16,10 @@ const ContDashboard = styled.div`
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Dashboard() {
+  const socket = io.connect(process.env.BASE_URL, {
+    path: '/api/socketio',
+  });
+
   const [myRooms, setMyRooms] = useState([
     {
       ID: 'ckud67qq400000s95fv33xngb',
@@ -62,7 +67,7 @@ export default function Dashboard() {
 
     // fetchConversation();
 
-    socket.connect();
+    // socket.connect();
 
     socket.on('session', ({ sessionID, ID }) => {
       // attach the session ID to the next reconnection attempts
