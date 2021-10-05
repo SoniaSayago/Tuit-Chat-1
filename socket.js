@@ -5,6 +5,7 @@ console.log('--------------------------------------------');
 console.log(URL);
 const socket = io(URL, {
   path: '/api/socketio',
+  transports: ['websocket'],
 });
 
 socket.onAny((event, ...args) => {
