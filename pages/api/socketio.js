@@ -1,6 +1,6 @@
 import { Server as ServerIO } from 'socket.io';
 import crypto from 'crypto';
-import InMemorySessionStore from '../../api/sessionStore';
+import InMemorySessionStore from '../../lib/sessionStore';
 
 export const config = {
   api: {
@@ -65,7 +65,7 @@ const socket = async (req, res) => {
       // make the Socket instance join the associated room
       // join the "userID" room
       socket.join(socket.ID);
-      // socket.join('general');
+      socket.join('ckud67qq400000s95fv33xngb');
 
       // fetch existing users
       const users = [];

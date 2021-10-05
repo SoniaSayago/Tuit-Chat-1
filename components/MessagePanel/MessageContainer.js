@@ -31,7 +31,7 @@ export default function MessageContainer({ userSelected }) {
           const author = message.fromSelf
             ? 'Tú'
             : userSelected.isChannel
-            ? userSelected.sender
+            ? message.sender
             : userSelected.name;
           return <Message key={index} message={message.content} author={author} />;
         })}

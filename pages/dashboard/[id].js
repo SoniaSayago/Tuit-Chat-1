@@ -1,19 +1,23 @@
-import socket from '../socket';
+import socket from '../../socket';
 import { useEffect, useState } from 'react';
-import ContactPanel from '../components/ContactPanel';
-import MessagePanel from '../components/MessagePanel';
+import ContactPanel from '../../components/ContactPanel';
+import MessagePanel from '../../components/MessagePanel';
 import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
+import useSwr from 'swr';
+import { useRouter } from 'next/router';
 
 const ContDashboard = styled.div`
   display: flex;
   height: 100vh;
 `;
 
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
 export default function Dashboard() {
   const [myRooms, setMyRooms] = useState([
     {
-      ID: 1,
+      ID: 'ckud67qq400000s95fv33xngb',
       name: 'general',
       messages: [],
       isChannel: true,
@@ -21,10 +25,31 @@ export default function Dashboard() {
     },
   ]);
 
+  const router = useRouter();
+
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(myRooms[0]);
 
   const { data: session, status } = useSession();
+
+  // const { data, error } = useSwr(`/api/users/${session.user.id}`, fetcher);
+  // const { data: conversations, error: errorConversations } = useSwr(
+  //   `/api/conversation/${session.user.id}`,
+  //   fetcher
+  // );
+
+  // const fetchConversation = async () => {
+  //   fetcher(`/api/conversation/${session.user.id}`).then((conversations) => {
+  //     const myContacts = conversations.map((chat) => {});
+  //     console.log(resp);
+  //   });
+
+  // const resp = await fetch(`/api/conversation/${session.user.id}`);
+
+  // const conversations = await resp.json();
+
+  // console.log(conversations);
+  // };
 
   useEffect(() => {
     const sessionID = localStorage.getItem('sessionID');
@@ -34,6 +59,8 @@ export default function Dashboard() {
     } else {
       socket.auth = { name: session.user.name, ID: session.user.id };
     }
+
+    // fetchConversation();
 
     socket.connect();
 
@@ -74,7 +101,7 @@ export default function Dashboard() {
           return single;
         });
 
-        setUsers(updatedUsers);
+        setUsers([...updatedUsers]);
         user.self = user.ID === socket.ID;
         initReactiveProperties(user);
       });
@@ -86,7 +113,7 @@ export default function Dashboard() {
         return a.name > b.name ? 1 : 0;
       });
 
-      setUsers(allUsers);
+      setUsers([...allUsers]);
     });
 
     socket.on('user connected', (user) => {
@@ -157,7 +184,7 @@ export default function Dashboard() {
       setMyRooms(updatedObject);
     });
 
-    socket.emit('join room', 1);
+    // socket.emit('join room', 1);
 
     return () => {
       socket.off('connect');
@@ -166,8 +193,9 @@ export default function Dashboard() {
       socket.off('user connected');
       socket.off('user disconnected');
       socket.off('private message');
+      socket.off('new message');
     };
-  });
+  }, [users]);
 
   const initReactiveProperties = (user) => {
     user.messages = [];
@@ -180,6 +208,8 @@ export default function Dashboard() {
   const handleSelectUser = (user) => {
     setSelectedUser(user);
     user.hasNewMessages = false;
+
+    router.push(user.ID);
   };
 
   const handleMessage = (content) => {
@@ -195,12 +225,13 @@ export default function Dashboard() {
         ...selectedUser,
         messages: [...selectedUser.messages, newMessage],
       };
+
       const usersUpdated = users.map((user) => {
         if (user.ID === selectedUser.ID) user.messages.push(newMessage);
         return user;
       });
 
-      setUsers(usersUpdated);
+      setUsers(() => usersUpdated);
       setSelectedUser(userSelected);
     } else if (selectedUser) {
       socket.emit('send message', {
