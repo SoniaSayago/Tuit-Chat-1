@@ -1,8 +1,8 @@
 import { io } from 'socket.io-client';
 
-const URL = 'https://tuit-chat-dvullgmja-apenaranda031-misenaeduc.vercel.app';
+const URL = process.env.NEXT_PUBLIC_VERCEL_URL;
 console.log('--------------------------------------------');
-console.log('https://tuit-chat-dvullgmja-apenaranda031-misenaeduc.vercel.app/');
+console.log(process.env.NEXT_PUBLIC_VERCEL_URL);
 const socket = io(URL, {
   path: '/api/socketio',
   autoConnect: false,
