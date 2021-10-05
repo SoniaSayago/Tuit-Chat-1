@@ -15,16 +15,6 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   socket.on('connect_error', (err) => {
-  //     console.log(`connect_error due to ${err}`);
-  //     socket.off('connect_error');
-  //   });
-  //   return () => {
-  //     socket.off('connect_error');
-  //   };
-  // }, []);
-
   const handleLogIn = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -32,7 +22,7 @@ export default function SignIn() {
     signIn('credentials', {
       email: emailRef.current.value,
       password: passwordRef.current.value,
-      callbackUrl: `${window.location.origin}/dashboard`,
+      callbackUrl: `${window.location.origin}/dashboard/ckud67qq400000s95fv33xngb`,
       redirect: false,
     }).then((result) => {
       if (result.error !== null) {
