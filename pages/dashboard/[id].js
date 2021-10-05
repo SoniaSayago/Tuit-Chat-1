@@ -1,4 +1,4 @@
-// import socket from '../../socket';
+import socket from '../../socket';
 import { useEffect, useState } from 'react';
 import ContactPanel from '../../components/ContactPanel';
 import MessagePanel from '../../components/MessagePanel';
@@ -16,10 +16,6 @@ const ContDashboard = styled.div`
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Dashboard() {
-  const socket = io.connect(process.env.BASE_URL, {
-    path: '/api/socketio',
-  });
-
   const [myRooms, setMyRooms] = useState([
     {
       ID: 'ckud67qq400000s95fv33xngb',
@@ -67,7 +63,7 @@ export default function Dashboard() {
 
     // fetchConversation();
 
-    // socket.connect();
+    socket.connect(process.env.BASE_URL);
 
     socket.on('session', ({ sessionID, ID }) => {
       // attach the session ID to the next reconnection attempts
