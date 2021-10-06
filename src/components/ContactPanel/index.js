@@ -1,6 +1,6 @@
 import ContactList from './ContactList';
 import Image from 'next/image';
-import logoBlanco from '../../public/assets/logoBlanco.png';
+import logoBlanco from '../../../public/assets/logoBlanco.png';
 import styled from 'styled-components';
 import { signOut } from 'next-auth/react';
 

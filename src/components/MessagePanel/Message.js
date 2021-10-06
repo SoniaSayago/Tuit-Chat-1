@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import avatar from '../../assets/user.png';
+import avatar from '../../../public/images/1.png';
 import styled from 'styled-components';
 
 const ContainerMessage = styled.div`

@@ -1,6 +1,7 @@
 import { LockClosedIcon, UserIcon, AtSymbolIcon, ChatIcon } from '@heroicons/react/solid';
 import Link from 'next/link';
 import Image from 'next/image';
+import Head from 'next/head';
 import logo from '../public/assets/logo.svg';
 import { useRef, useState } from 'react';
 
@@ -32,6 +33,13 @@ export default function SignUp() {
   };
 
   return (
+    <>
+    <Head>
+    <title>tuit chat - Register now! 🤓</title>
+    <meta name="Register Now" content="Share | Connect | Enjoy" />
+    <link rel="icon" href="/favicon.ico" />
+    </Head>
+
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
@@ -131,11 +139,13 @@ export default function SignUp() {
                   <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </span>
-              <button
+              <button 
                 type="button"
+                id="profile-upload" 
+                name="profile-upload" 
                 className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Upload a photo
+                Choose profile photo
               </button>
             </div>
           </div>
@@ -210,5 +220,6 @@ export default function SignUp() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,9 +1,10 @@
 import socket from '../../socket';
 import { useEffect, useState } from 'react';
-import ContactPanel from '../../components/ContactPanel';
-import MessagePanel from '../../components/MessagePanel';
+import ContactPanel from '../../src/components/ContactPanel';
+import MessagePanel from '../../src/components/MessagePanel';
 import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
+import Head from 'next/head';
 import useSwr from 'swr';
 import { useRouter } from 'next/router';
 
@@ -255,10 +256,17 @@ export default function Dashboard() {
   };
 
   return (
+    <>
+    <Head>
+      <title>tuit chat - Welcome 🥳 ! </title>
+      <meta name="tuit chat" content="Share | Connect | Enjoy" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
     <ContDashboard>
       <ContactPanel users={users} rooms={myRooms} onSelectUser={handleSelectUser} />
       <MessagePanel userSelected={selectedUser} onMessage={handleMessage} />
     </ContDashboard>
+    </>
   );
 }
 

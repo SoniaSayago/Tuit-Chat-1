@@ -42,7 +42,7 @@ export default function SignIn() {
   return (
     <>
       <Head>
-        <title>tuit chat</title>
+        <title>tuit chat 🥳 Share | Connect | Enjoy</title>
         <meta name="tuit chat" content="Share | Connect | Enjoy" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
