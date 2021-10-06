@@ -1,4 +1,4 @@
-import prisma from '../../../lib/database';
+import prisma from '../../../lib';
 
 export default async function conversationHandler(req, res) {
   const {
