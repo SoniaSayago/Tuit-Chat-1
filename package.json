@@ -12,7 +12,7 @@
     "db-down": "docker-compose down"
   },
   "engines": {
-    "node": "14.x"
+    "node": "15.x"
   },
   "prisma": {
     "seed": "node ./prisma/seed.js"
