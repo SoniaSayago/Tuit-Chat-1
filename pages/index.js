@@ -22,7 +22,7 @@ export default function SignIn() {
     signIn('credentials', {
       email: emailRef.current.value,
       password: passwordRef.current.value,
-      callbackUrl: `${window.location.origin}/dashboard/ckud67qq400000s95fv33xngb`,
+      callbackUrl: `${process.env.NEXT_PUBLIC_VERCEL_URL}/dashboard/ckud67qq400000s95fv33xngb`,
       redirect: false,
     }).then((result) => {
       if (result.error !== null) {
