@@ -1,20 +1,12 @@
 import prisma from '../../../lib/database';
 
 export default async function conversationHandler(req, res) {
-  const {
-    query: { id },
-    method,
-  } = req;
-
   switch (method) {
     case 'GET':
       // Get data from your database
-      const conversations = await prisma.conversation.findMany({
+      const conversations = await prisma.user.findMany({
         where: {
           OR: [{ userOneId: id }, { userTwoId: id }],
-        },
-        include: {
-          userOne: true,
         },
       });
 

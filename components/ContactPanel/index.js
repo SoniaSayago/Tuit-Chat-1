@@ -15,6 +15,11 @@ const Container = styled.section`
 `;
 
 export default function ContactPanel({ users, rooms, onSelectUser }) {
+  const logOut = () => {
+    localStorage.removeItem('sessionID');
+    signOut;
+  };
+
   return (
     <Container className="bg-purple-600">
       <div>
@@ -28,7 +33,7 @@ export default function ContactPanel({ users, rooms, onSelectUser }) {
           onSelectUser={onSelectUser}
         />
       </div>
-      <button onClick={signOut}>Cerrar sesión</button>
+      <button onClick={logOut}>Cerrar sesión</button>
     </Container>
   );
 }

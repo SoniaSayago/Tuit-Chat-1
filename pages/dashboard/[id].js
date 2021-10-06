@@ -39,17 +39,59 @@ export default function Dashboard() {
   // );
 
   // const fetchConversation = async () => {
-  //   fetcher(`/api/conversation/${session.user.id}`).then((conversations) => {
-  //     const myContacts = conversations.map((chat) => {});
-  //     console.log(resp);
+  //   fetcher(`/api/user/${session.user.id}`).then((conversations) => {
+  //     console.log(conversations);
+  //     // const currentUser = session.user.id;
+  //     // const users = [];
+
+  //     // const info = (user, messages) => ({
+  //     //   ID: user.id,
+  //     //   name: user.name,
+  //     //   connected: false,
+  //     //   hasNewMessages: false,
+  //     //   isChannel: false,
+  //     //   messages,
+  //     //   self: false,
+  //     // });
+
+  //     // const myContacts = conversations.map((chat) => {
+  //     //   const {
+  //     //     userOneId: { id: idOne, name: nameOne },
+  //     //     userTwoId: { id: idTwo, name: nameTwo },
+  //     //     messages,
+  //     //   } = chat;
+
+  //     //   return idOne === currentUser ? info() : idOne;
+  //     // });
   //   });
 
-  // const resp = await fetch(`/api/conversation/${session.user.id}`);
+  //   // const resp = await fetch(`/api/conversation/${session.user.id}`);
 
-  // const conversations = await resp.json();
+  //   // const conversations = await resp.json();
 
-  // console.log(conversations);
+  //   // console.log(conversations);
   // };
+
+  const conversations = (chats) => {
+    const users = chats.map((chat) => {
+      const prop = chat?.userOne ? 'userOne' : 'userTwo';
+      return {
+        ID: chat[prop].id,
+        conversation: chat.id,
+        name: chat[prop].name,
+        messages: chat.messages,
+        connected: false,
+        hasNewMessages: false,
+        isChannel: false,
+        self: false,
+      };
+    });
+
+    setUsers(users);
+    console.log(chats);
+    console.log('El consolelog de conversations');
+    socket.connect();
+  };
 
   useEffect(() => {
     const sessionID = localStorage.getItem('sessionID');
@@ -60,18 +102,24 @@ export default function Dashboard() {
       socket.auth = { name: session.user.name, ID: session.user.id };
     }
 
-    // fetchConversation();
+    conversations([...session.user.userOne, ...session.user.userTwo]);
 
-    socket.connect();
-
-    socket.on('session', ({ sessionID, ID }) => {
+    socket.on('session', ({ sessionID, name, ID }) => {
       // attach the session ID to the next reconnection attempts
       socket.auth = { sessionID };
       // store it in the localStorage
       localStorage.setItem('sessionID', sessionID);
       // save the ID of the user
       socket.ID = ID;
+      socket.name = name;
     });
+  }, []);
+
+  useEffect(() => {
+    // console.log(session.user);
+    // console.log('************************');
+
+    // socket.connect();
 
     socket.on('connect', () => {
       const usersUpdated = users.map((user) => {
@@ -93,27 +141,46 @@ export default function Dashboard() {
     });
 
     socket.on('users', (allUsers) => {
+      const usersUpd = [];
       allUsers.forEach((user) => {
-        const updatedUsers = users.map((single) => {
-          if (single.ID === user.ID) {
-            single.connected = user.connected;
-          }
-          return single;
-        });
+        const found = users.find(({ ID }) => user.ID === ID);
 
-        setUsers([...updatedUsers]);
+        if (found) {
+          found.connected = user.connected;
+        }
+
+        // const updatedUsers = users.map((single) => {
+        //   if (single.ID === user.ID) {
+        //     single.connected = user.connected;
+        //   }
+        //   return single;
+        // });
+
+        // setUsers([...updatedUsers]);
         user.self = user.ID === socket.ID;
         initReactiveProperties(user);
+
+        usersUpd.push(user);
+      });
+
+      users.forEach((myChats) => {
+        const found = usersUpd.find(({ ID }) => myChats.ID === ID);
+
+        if (!found) usersUpd.push(myChats);
+        else {
+          found.messages = myChats.messages;
+          found.conversation = myChats.conversation;
+        }
       });
       // put the current user first, and then sort by username
-      allUsers.sort((a, b) => {
+      usersUpd.sort((a, b) => {
         if (a.self) return -1;
         if (b.self) return 1;
         if (a.name < b.name) return -1;
         return a.name > b.name ? 1 : 0;
       });
 
-      setUsers([...allUsers]);
+      setUsers([...usersUpd]);
     });
 
     socket.on('user connected', (user) => {
@@ -145,14 +212,14 @@ export default function Dashboard() {
       setUsers([...updated]);
     });
 
-    socket.on('private message', ({ content, to, from }) => {
+    socket.on('private message', ({ message, to, from, author, createdAt }) => {
       const updatedObject = users.map((user) => {
         const fromSelf = socket.ID === from;
         if (user.ID === (fromSelf ? to : from)) {
           if (user.ID === selectedUser.ID) {
             user.messages = [...selectedUser.messages];
           }
-          user.messages.push({ content, fromSelf });
+          user.messages.push({ message, author, createdAt });
         }
 
         if (user.ID !== selectedUser.ID) {
@@ -215,12 +282,17 @@ export default function Dashboard() {
   const handleMessage = (content) => {
     if (selectedUser && !selectedUser.isChannel) {
       socket.emit('private message', {
-        content,
-        sender: socket.name,
+        message: content,
+        author: { name: socket.name },
         to: selectedUser.ID,
+        createdAt: '2020-07-01',
       });
 
-      const newMessage = { content, fromSelf: true };
+      const newMessage = {
+        message: content,
+        author: { name: socket.name },
+        createdAt: '2020-07-01',
+      };
       const userSelected = {
         ...selectedUser,
         messages: [...selectedUser.messages, newMessage],

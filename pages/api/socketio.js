@@ -9,7 +9,7 @@ export const config = {
 };
 
 const sessionStore = new InMemorySessionStore();
-const randomId = () => crypto.randomBytes(8).toString('hex');
+// const randomId = () => crypto.randomBytes(8).toString('hex');
 
 const socket = async (req, res) => {
   if (!res.socket.server.io) {
@@ -59,6 +59,7 @@ const socket = async (req, res) => {
       // emit session details
       socket.emit('session', {
         sessionID: socket.sessionID,
+        name: socket.name,
         ID: socket.ID,
       });
 
@@ -109,13 +110,18 @@ const socket = async (req, res) => {
       });
 
       // forward the private message to the right recipient
-      socket.on('private message', ({ content, to }) => {
+      socket.on('private message', ({ message, author, createdAt, to }) => {
         // broadcast in both the recipient and the sender
-        socket.to(to).to(socket.ID).emit('private message', {
-          content,
-          from: socket.ID,
-          to,
-        });
+        socket
+          .to(to)
+          .to(socket.ID)
+          .emit('private message', {
+            message,
+            author: { name: socket.name },
+            createdAt,
+            from: socket.ID,
+            to,
+          });
       });
 
       // notify users upon disconnection
