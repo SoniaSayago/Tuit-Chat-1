@@ -11,6 +11,9 @@
     "db-status": "docker-compose ps",
     "db-down": "docker-compose down"
   },
+  "engines": {
+    "node": "14.x"
+  },
   "prisma": {
     "seed": "node ./prisma/seed.js"
   },
