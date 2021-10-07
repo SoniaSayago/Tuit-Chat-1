@@ -2,11 +2,11 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  // const general = await prisma.room.create({
-  //   data: {
-  //     name: 'General',
-  //   },
-  // });
+  const general = await prisma.room.create({
+    data: {
+      name: 'General',
+    },
+  });
   // const newConversation = await prisma.conversation.create({
   //   data: {
   //     userOne: {
@@ -33,48 +33,48 @@ async function main() {
   //   },
   // });
   // console.log({ newMessage });
-  const user = await prisma.user.findFirst({
-    where: {
-      email: 'an@ej.co',
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      password: true,
-      isActive: true,
-      UserToRooms: {
-        select: {
-          room: true,
-        },
-      },
-      userOne: true,
-      userTwo: {
-        select: {
-          userOne: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          messages: {
-            select: {
-              message: true,
-              author: {
-                select: {
-                  name: true,
-                },
-              },
-              createdAt: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  // const user = await prisma.user.findFirst({
+  //   where: {
+  //     email: 'an@ej.co',
+  //   },
+  //   select: {
+  //     id: true,
+  //     name: true,
+  //     email: true,
+  //     image: true,
+  //     password: true,
+  //     isActive: true,
+  //     UserToRooms: {
+  //       select: {
+  //         room: true,
+  //       },
+  //     },
+  //     userOne: true,
+  //     userTwo: {
+  //       select: {
+  //         userOne: {
+  //           select: {
+  //             id: true,
+  //             name: true,
+  //           },
+  //         },
+  //         messages: {
+  //           select: {
+  //             message: true,
+  //             author: {
+  //               select: {
+  //                 name: true,
+  //               },
+  //             },
+  //             createdAt: true,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
 
-  console.log(user);
+  console.log(general);
 }
 
 main()

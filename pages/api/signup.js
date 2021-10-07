@@ -14,11 +14,21 @@ export default async function signup(req, res) {
           name,
           email,
           password: passwordEncrypted,
+          UserToRooms: {
+            create: {
+              room: {
+                connect: {
+                  id: 'ckuhezeu40000w095w3nx9ggt',
+                },
+              },
+            },
+          },
         },
       });
 
       res.status(201).json(resp);
     } catch (error) {
+      console.log(error.message);
       res.status(500).json({ message: 'Something went wrong' });
     }
   } else {

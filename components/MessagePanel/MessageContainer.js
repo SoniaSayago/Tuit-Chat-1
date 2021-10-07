@@ -24,12 +24,11 @@ const ContainerAllMessages = styled.div`
 `;
 
 export default function MessageContainer({ userSelected }) {
-  console.log(userSelected);
   return (
     <ContainerAllMessages>
       {userSelected &&
         userSelected.messages.map((message, index) => {
-          const author = message.author.name;
+          const author = message.author?.name || message.author;
           return <Message key={index} message={message.message} author={author} />;
         })}
       {/* <SeparatorDate /> */}

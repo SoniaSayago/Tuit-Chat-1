@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 const URL = process.env.NEXT_PUBLIC_VERCEL_URL;
 console.log('--------------------------------------------');
 console.log(URL);
-const socket = io(URL, {
+const socket = io('https://tuit-tuit.herokuapp.com', {
   path: '/api/socketio',
   transports: ['polling', 'websocket'],
   autoConnect: false,

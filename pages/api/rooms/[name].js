@@ -2,23 +2,30 @@ import prisma from '../../../lib/database';
 
 export default async function conversationHandler(req, res) {
   const {
-    query: { id },
+    query: { name },
     method,
   } = req;
 
   switch (method) {
     case 'GET':
       // Get data from your database
-      const conversations = await prisma.conversation.findMany({
+      const room = await prisma.room.findFirst({
         where: {
-          OR: [{ userOneId: id }, { userTwoId: id }],
+          OR: [{ name: name }, { id: name }],
         },
-        include: {
-          userOne: true,
+        select: {
+          id: true,
+          name: true,
+          messages: {
+            select: {
+              author: true,
+              message: true,
+            },
+          },
         },
       });
 
-      res.status(200).json(conversations);
+      res.status(200).json({ ...room });
       break;
     default:
       res.setHeader('Allow', ['GET']);

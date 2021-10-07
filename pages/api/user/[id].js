@@ -18,13 +18,28 @@ export default async function userHandler(req, res) {
           name: true,
           email: true,
           image: true,
+          password: true,
+          isActive: true,
           UserToRooms: {
             select: {
-              room: true,
+              room: {
+                select: {
+                  id: true,
+                  name: true,
+                  // messages: {
+                  //   select: {
+                  //     author: true,
+                  //     message: true,
+                  //     createdAt: true,
+                  //   },
+                  // },
+                },
+              },
             },
           },
           userOne: {
             select: {
+              id: true,
               userTwo: {
                 select: {
                   id: true,
@@ -46,7 +61,8 @@ export default async function userHandler(req, res) {
           },
           userTwo: {
             select: {
-              userTwo: {
+              id: true,
+              userOne: {
                 select: {
                   id: true,
                   name: true,

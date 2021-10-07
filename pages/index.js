@@ -22,7 +22,7 @@ export default function SignIn() {
     signIn('credentials', {
       email: emailRef.current.value,
       password: passwordRef.current.value,
-      callbackUrl: `https://tuit-tuit.herokuapp.com/dashboard/ckud67qq400000s95fv33xngb`,
+      callbackUrl: `${window.location.origin}/dashboard`,
       redirect: false,
     }).then((result) => {
       if (result.error !== null) {

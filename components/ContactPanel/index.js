@@ -14,10 +14,10 @@ const Container = styled.section`
   justify-content: space-between;
 `;
 
-export default function ContactPanel({ users, rooms, onSelectUser }) {
+export default function ContactPanel({ users, rooms, onSelectUser, onCreateRoom }) {
   const logOut = () => {
     localStorage.removeItem('sessionID');
-    signOut;
+    signOut();
   };
 
   return (
@@ -26,7 +26,12 @@ export default function ContactPanel({ users, rooms, onSelectUser }) {
         <Image src={logo} alt="logo" width={200} height={100} />
         <p className="text-center mt-0">Share | Connect | Enjoy</p>
 
-        <ContactList category="Channels" list={rooms} onSelectUser={onSelectUser} />
+        <ContactList
+          category="Channels"
+          list={rooms}
+          onSelectUser={onSelectUser}
+          onCreateRoom={onCreateRoom}
+        />
         <ContactList
           category="Direct messages"
           list={users}

@@ -76,7 +76,18 @@ model UserToRooms {
 model Room {
   id            String    @id @default(cuid())
   name          String    @unique
+  isChannel     Boolean   @default(true)
   roomUsers     UserToRooms[]
+  messages      MessageRoom[]
+}
+
+model MessageRoom {
+  id            String        @id @default(cuid())
+  author        String
+  message       String
+  roomId        String
+  room          Room          @relation(fields: [roomId], references: [id])
+  createdAt     DateTime      @default(now())
 }
 
 model Message {

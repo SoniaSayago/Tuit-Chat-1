@@ -5,6 +5,7 @@ import { compare } from 'bcrypt';
 import prisma from '../../../lib/database';
 
 let userAccount = null;
+let rooms = null;
 
 const options = {
   adapter: PrismaAdapter(prisma),
@@ -39,7 +40,19 @@ const options = {
             isActive: true,
             UserToRooms: {
               select: {
-                room: true,
+                room: {
+                  select: {
+                    id: true,
+                    name: true,
+                    // messages: {
+                    //   select: {
+                    //     author: true,
+                    //     message: true,
+                    //     createdAt: true,
+                    //   },
+                    // },
+                  },
+                },
               },
             },
             userOne: {
@@ -89,6 +102,19 @@ const options = {
           },
         });
 
+        rooms = await prisma.room.findMany({
+          select: {
+            id: true,
+            name: true,
+            messages: {
+              select: {
+                author: true,
+                message: true,
+              },
+            },
+          },
+        });
+
         if (!user) throw new Error('Please sign up');
 
         const checkPassword = await compare(credentials.password, user.password);
@@ -127,6 +153,7 @@ const options = {
     async session({ session, user, token }) {
       if (userAccount !== null) {
         session.user = userAccount;
+        session.rooms = rooms;
       } else if (
         typeof token.user !== typeof undefined &&
         (typeof session.user === typeof undefined ||

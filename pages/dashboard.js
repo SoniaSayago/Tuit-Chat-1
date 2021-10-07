@@ -1,11 +1,9 @@
-import socket from '../../socket';
+import socket from '../socket';
 import { useEffect, useState } from 'react';
-import ContactPanel from '../../components/ContactPanel';
-import MessagePanel from '../../components/MessagePanel';
+import ContactPanel from '../components/ContactPanel';
+import MessagePanel from '../components/MessagePanel';
 import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
-import useSwr from 'swr';
-import { useRouter } from 'next/router';
 
 const ContDashboard = styled.div`
   display: flex;
@@ -17,62 +15,22 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Dashboard() {
   const [myRooms, setMyRooms] = useState([
     {
-      ID: 'ckud67qq400000s95fv33xngb',
-      name: 'general',
+      ID: 'ckuhezeu40000w095w3nx9ggt',
+      name: 'General',
       messages: [],
       isChannel: true,
       // hasNewMessages: false,
     },
   ]);
 
-  const router = useRouter();
-
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(myRooms[0]);
 
   const { data: session, status } = useSession();
 
-  // const { data, error } = useSwr(`/api/users/${session.user.id}`, fetcher);
-  // const { data: conversations, error: errorConversations } = useSwr(
-  //   `/api/conversation/${session.user.id}`,
-  //   fetcher
-  // );
+  console.log(session.user);
 
-  // const fetchConversation = async () => {
-  //   fetcher(`/api/user/${session.user.id}`).then((conversations) => {
-  //     console.log(conversations);
-  //     // const currentUser = session.user.id;
-  //     // const users = [];
-
-  //     // const info = (user, messages) => ({
-  //     //   ID: user.id,
-  //     //   name: user.name,
-  //     //   connected: false,
-  //     //   hasNewMessages: false,
-  //     //   isChannel: false,
-  //     //   messages,
-  //     //   self: false,
-  //     // });
-
-  //     // const myContacts = conversations.map((chat) => {
-  //     //   const {
-  //     //     userOneId: { id: idOne, name: nameOne },
-  //     //     userTwoId: { id: idTwo, name: nameTwo },
-  //     //     messages,
-  //     //   } = chat;
-
-  //     //   return idOne === currentUser ? info() : idOne;
-  //     // });
-  //   });
-
-  //   // const resp = await fetch(`/api/conversation/${session.user.id}`);
-
-  //   // const conversations = await resp.json();
-
-  //   // console.log(conversations);
-  // };
-
-  const conversations = (chats) => {
+  const conversations = (chats, allRooms, joinedRooms) => {
     const users = chats.map((chat) => {
       const prop = chat?.userOne ? 'userOne' : 'userTwo';
       return {
@@ -87,9 +45,25 @@ export default function Dashboard() {
       };
     });
 
+    const rooms = allRooms.map((channel) => {
+      const found = joinedRooms.find(({ room }) => room.id === channel.id);
+
+      if (found) {
+        socket.emit('join room', channel.id);
+      }
+
+      return {
+        ID: channel.id,
+        name: channel.name,
+        messages: channel.messages || [],
+        isChannel: true,
+        isJoined: found ? true : false,
+      };
+    });
+
+    setMyRooms(rooms);
+    setSelectedUser(rooms[0]);
     setUsers(users);
-    console.log(chats);
-    console.log('El consolelog de conversations');
     socket.connect();
   };
 
@@ -102,7 +76,11 @@ export default function Dashboard() {
       socket.auth = { name: session.user.name, ID: session.user.id };
     }
 
-    conversations([...session.user.userOne, ...session.user.userTwo]);
+    conversations(
+      [...session.user.userOne, ...session.user.userTwo],
+      session.rooms,
+      session.user.UserToRooms
+    );
 
     socket.on('session', ({ sessionID, name, ID }) => {
       // attach the session ID to the next reconnection attempts
@@ -116,11 +94,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // console.log(session.user);
-    // console.log('************************');
-
-    // socket.connect();
-
     socket.on('connect', () => {
       const usersUpdated = users.map((user) => {
         if (user.self) user.connected = true;
@@ -149,14 +122,6 @@ export default function Dashboard() {
           found.connected = user.connected;
         }
 
-        // const updatedUsers = users.map((single) => {
-        //   if (single.ID === user.ID) {
-        //     single.connected = user.connected;
-        //   }
-        //   return single;
-        // });
-
-        // setUsers([...updatedUsers]);
         user.self = user.ID === socket.ID;
         initReactiveProperties(user);
 
@@ -234,11 +199,10 @@ export default function Dashboard() {
       setUsers(updatedObject);
     });
 
-    socket.on('new message', ({ content, sender, from, to }) => {
+    socket.on('new message', ({ message, author, to, createdAt }) => {
       const updatedObject = myRooms.map((room) => {
         if (room.ID === to) {
-          const fromSelf = socket.ID === from;
-          room.messages.push({ content, fromSelf, sender });
+          room.messages.push({ message, author, createdAt });
         }
 
         if (selectedUser.ID === room.ID) {
@@ -251,7 +215,21 @@ export default function Dashboard() {
       setMyRooms(updatedObject);
     });
 
-    // socket.emit('join room', 1);
+    socket.on('new room', ({ name }) => {
+      fetcher(`/api/rooms/${name}`).then((resp) => {
+        const newRoom = {
+          ID: resp.id,
+          name: resp.name,
+          messages: resp.messages || [],
+          isChannel: true,
+          isJoined: false,
+        };
+
+        myRooms.push(newRoom);
+
+        setMyRooms([...myRooms]);
+      });
+    });
 
     return () => {
       socket.off('connect');
@@ -261,8 +239,9 @@ export default function Dashboard() {
       socket.off('user disconnected');
       socket.off('private message');
       socket.off('new message');
+      socket.off('new room');
     };
-  }, [users]);
+  }, [users, myRooms]);
 
   const initReactiveProperties = (user) => {
     user.messages = [];
@@ -272,21 +251,114 @@ export default function Dashboard() {
 
   // const initReactiveRooms
 
+  const handleJoin = () => {
+    fetch('/api/rooms/join', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        room: selectedUser.ID,
+        user: socket.ID,
+      }),
+    }).then(() => {
+      fetcher(`/api/rooms/${selectedUser.ID}`).then((resp) => {
+        const joined = {
+          ID: resp.id,
+          name: resp.name,
+          messages: resp.messages || [],
+          isChannel: true,
+          isJoined: true,
+        };
+
+        const updated = myRooms.map((room) => {
+          if (room.ID === selectedUser.ID) {
+            return joined;
+          } else {
+            return room;
+          }
+        });
+
+        setMyRooms([...updated]);
+      });
+
+      const updated = myRooms.map((room) => {
+        if (room.ID === selectedUser.ID) {
+          room.isJoined = true;
+        }
+
+        return room;
+      });
+
+      setMyRooms(updated);
+    });
+  };
+
   const handleSelectUser = (user) => {
     setSelectedUser(user);
     user.hasNewMessages = false;
+  };
 
-    router.push(user.ID);
+  const createRoom = (name) => {
+    fetch('/api/rooms/newRoom', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+      }),
+    }).then(() => {
+      socket.emit('create room', {
+        name: name,
+      });
+    });
+  };
+
+  const sendMessage = (content, conversation) => {
+    fetch('/api/user/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        authorId: socket.ID,
+        message: content,
+        conversationId: selectedUser.conversation || conversation,
+      }),
+    })
+      .then(() => {
+        socket.emit('private message', {
+          message: content,
+          author: { name: socket.name },
+          to: selectedUser.ID,
+          createdAt: '2020-07-01',
+        });
+      })
+      .catch((e) => console.log(e.message));
   };
 
   const handleMessage = (content) => {
     if (selectedUser && !selectedUser.isChannel) {
-      socket.emit('private message', {
-        message: content,
-        author: { name: socket.name },
-        to: selectedUser.ID,
-        createdAt: '2020-07-01',
-      });
+      if (!selectedUser.conversation) {
+        fetch('/api/user/newConversation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            authorId: socket.ID,
+            userTo: selectedUser.ID,
+          }),
+        })
+          .then((response) => response.json())
+          .then(({ id }) => {
+            sendMessage(content, id);
+          })
+          .catch((e) => console.log(e.message));
+      } else {
+        sendMessage(content);
+      }
 
       const newMessage = {
         message: content,
@@ -306,16 +378,38 @@ export default function Dashboard() {
       setUsers(() => usersUpdated);
       setSelectedUser(userSelected);
     } else if (selectedUser) {
-      socket.emit('send message', {
-        content,
-        to: selectedUser.ID,
-      });
+      fetch('/api/rooms/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          author: socket.name,
+          message: content,
+          room: selectedUser.ID,
+        }),
+      })
+        .then(() => {
+          socket.emit('send message', {
+            message: content,
+            to: selectedUser.ID,
+            author: { name: socket.name },
+            createdAt: '2020-07-01',
+          });
+        })
+        .catch((e) => console.log(e.message));
 
-      const newMessage = { content, fromSelf: true };
+      const newMessage = {
+        message: content,
+        author: { name: socket.name },
+        createdAt: '2020-07-01',
+      };
+
       const roomSelected = {
         ...selectedUser,
         messages: [...selectedUser.messages, newMessage],
       };
+
       const roomsUpdated = myRooms.map((room) => {
         if (room.ID === selectedUser.ID) room.messages.push(newMessage);
         return room;
@@ -328,8 +422,17 @@ export default function Dashboard() {
 
   return (
     <ContDashboard>
-      <ContactPanel users={users} rooms={myRooms} onSelectUser={handleSelectUser} />
-      <MessagePanel userSelected={selectedUser} onMessage={handleMessage} />
+      <ContactPanel
+        users={users}
+        rooms={myRooms}
+        onSelectUser={handleSelectUser}
+        onCreateRoom={createRoom}
+      />
+      <MessagePanel
+        userSelected={selectedUser}
+        onMessage={handleMessage}
+        onHandleJoin={handleJoin}
+      />
     </ContDashboard>
   );
 }
@@ -344,9 +447,15 @@ export async function getServerSideProps(context) {
         permanent: false,
       },
     };
-  }
+  } else {
+    const resp = await fetch(`http://localhost:3000/api/user/${session.user.id}`);
+    const user = await resp.json();
 
-  return {
-    props: { session },
-  };
+    const allRooms = await fetch('http://localhost:3000/api/rooms/allRooms');
+    const rooms = await allRooms.json();
+
+    return {
+      props: { session: { user, rooms } },
+    };
+  }
 }

@@ -1,18 +1,23 @@
-import prisma from '../../lib/database';
+import prisma from '../../../lib/database';
 
-// Para las conversaciones del usuario que ha iniciado sesión
 export default async function conversationHandler(req, res) {
+  const { method } = req;
+
   switch (method) {
     case 'POST':
-      const { userOne, userTwo } = req.body;
+      const { authorId, userTo } = req.body;
 
       const newConversation = await prisma.conversation.create({
         data: {
           userOne: {
-            connect: { id: userOne },
+            connect: {
+              id: authorId,
+            },
           },
           userTwo: {
-            connect: { id: userTwo },
+            connect: {
+              id: userTo,
+            },
           },
         },
       });

@@ -66,7 +66,7 @@ const socket = async (req, res) => {
       // make the Socket instance join the associated room
       // join the "userID" room
       socket.join(socket.ID);
-      socket.join('ckud67qq400000s95fv33xngb');
+      // socket.join('ckud67qq400000s95fv33xngb');
 
       // fetch existing users
       const users = [];
@@ -91,16 +91,6 @@ const socket = async (req, res) => {
         socket.join(room);
       });
 
-      // Para los rooms
-      socket.on('send message', ({ content, to }) => {
-        socket.to(to).emit('new message', {
-          content,
-          sender: socket.name,
-          from: socket.ID,
-          to,
-        });
-      });
-
       // notify existing users
       // emit to all connected clients, except the socket itself.
       socket.broadcast.emit('user connected', {
@@ -109,19 +99,30 @@ const socket = async (req, res) => {
         connected: true,
       });
 
+      socket.on('create room', ({ name }) => {
+        socket.emit('new room', { name });
+      });
+
+      // Para los rooms
+      socket.on('send message', ({ message, to, author, createdAt }) => {
+        socket.to(to).emit('new message', {
+          message,
+          author,
+          createdAt,
+          to,
+        });
+      });
+
       // forward the private message to the right recipient
       socket.on('private message', ({ message, author, createdAt, to }) => {
         // broadcast in both the recipient and the sender
-        socket
-          .to(to)
-          .to(socket.ID)
-          .emit('private message', {
-            message,
-            author: { name: socket.name },
-            createdAt,
-            from: socket.ID,
-            to,
-          });
+        socket.to(to).to(socket.ID).emit('private message', {
+          message,
+          author,
+          createdAt,
+          from: socket.ID,
+          to,
+        });
       });
 
       // notify users upon disconnection
