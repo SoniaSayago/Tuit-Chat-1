@@ -63,7 +63,7 @@ export default function Dashboard() {
     setMyRooms(rooms);
     setSelectedUser(rooms[0]);
     setUsers(users);
-    socket.connect();
+    socket.connect(baseURL);
   };
 
   useEffect(() => {
