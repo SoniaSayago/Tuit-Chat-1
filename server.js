@@ -14,9 +14,11 @@ const nextHandler = nextApp.getRequestHandler();
 const sessionStore = new InMemorySessionStore();
 
 nextApp.prepare().then(async () => {
-  const app = express();
-  const server = http.createServer(app);
-  const io = socketIO(server);
+  const app = express().listen(port, () => {
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+  // const server = http.createServer(app);
+  const io = socketIO(app);
 
   // app.get('/hello', async (_, res) => {
   //   res.send('Hello World');
@@ -154,7 +156,7 @@ nextApp.prepare().then(async () => {
 
   app.all('*', (req, res) => nextHandler(req, res));
 
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
-  });
+  // server.listen(port, () => {
+  //   console.log(`> Ready on http://localhost:${port}`);
+  // });
 });
