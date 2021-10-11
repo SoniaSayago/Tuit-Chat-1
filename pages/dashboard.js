@@ -4,6 +4,7 @@ import ContactPanel from '../components/ContactPanel';
 import MessagePanel from '../components/MessagePanel';
 import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
+import baseURL from '../utils/bseUrls';
 
 const ContDashboard = styled.div`
   display: flex;
@@ -214,7 +215,7 @@ export default function Dashboard() {
     });
 
     socket.on('new room', ({ name }) => {
-      fetcher(`/api/rooms/${name}`).then((resp) => {
+      fetcher(`${baseURL}/api/rooms/${name}`).then((resp) => {
         const newRoom = {
           ID: resp.id,
           name: resp.name,
@@ -250,7 +251,7 @@ export default function Dashboard() {
   // const initReactiveRooms
 
   const handleJoin = () => {
-    fetch('/api/rooms/join', {
+    fetch(`${baseURL}/api/rooms/join`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -260,7 +261,7 @@ export default function Dashboard() {
         user: socket.ID,
       }),
     }).then(() => {
-      fetcher(`/api/rooms/${selectedUser.ID}`).then((resp) => {
+      fetcher(`${baseURL}/api/rooms/${selectedUser.ID}`).then((resp) => {
         const joined = {
           ID: resp.id,
           name: resp.name,
@@ -298,7 +299,7 @@ export default function Dashboard() {
   };
 
   const createRoom = (name) => {
-    fetch('/api/rooms/newRoom', {
+    fetch(`${baseURL}/api/rooms/newRoom`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -314,7 +315,7 @@ export default function Dashboard() {
   };
 
   const sendMessage = (content, conversation) => {
-    fetch('/api/user/messages', {
+    fetch(`${baseURL}/api/user/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -339,7 +340,7 @@ export default function Dashboard() {
   const handleMessage = (content) => {
     if (selectedUser && !selectedUser.isChannel) {
       if (!selectedUser.conversation) {
-        fetch('/api/user/newConversation', {
+        fetch(`${baseURL}/api/user/newConversation`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -376,7 +377,7 @@ export default function Dashboard() {
       setUsers(() => usersUpdated);
       setSelectedUser(userSelected);
     } else if (selectedUser) {
-      fetch('/api/rooms/messages', {
+      fetch(`${baseURL}/api/rooms/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -446,10 +447,10 @@ export async function getServerSideProps(context) {
       },
     };
   } else {
-    const resp = await fetch(`http://localhost:3000/api/user/${session.user.id}`);
+    const resp = await fetch(`${baseURL}/api/user/${session.user.id}`);
     const user = await resp.json();
 
-    const allRooms = await fetch('http://localhost:3000/api/rooms/allRooms');
+    const allRooms = await fetch(`${baseURL}/api/rooms/allRooms`);
     const rooms = await allRooms.json();
 
     return {

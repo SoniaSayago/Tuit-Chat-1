@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../public/assets/logo.svg';
 import { useRef, useState } from 'react';
+import baseURL from '../utils/bseUrls';
 
 export default function SignUp() {
   const nameRef = useRef(null);
@@ -15,7 +16,7 @@ export default function SignUp() {
     e.preventDefault();
     e.stopPropagation();
 
-    const resp = await fetch(`/api/signup`, {
+    const resp = await fetch(`${baseURL}/api/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
