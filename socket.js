@@ -1,4 +1,4 @@
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 
 const URL = process.env.NEXT_PUBLIC_VERCEL_URL;
 console.log('--------------------------------------------');

@@ -1,6 +1,8 @@
 import { Server as ServerIO } from 'socket.io';
 import InMemorySessionStore from '../../lib/sessionStore';
 
+import baseURL from '../../utils/bseUrls';
+
 export const config = {
   api: {
     bodyParser: false,
