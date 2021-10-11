@@ -1,34 +1,31 @@
 import prisma from '../../../lib/database';
 
-export default async function userHandler(req, res) {
+export default async function conversationHandler(req, res) {
   const {
-    query: { id },
+    query: { name },
     method,
   } = req;
 
   switch (method) {
     case 'GET':
       // Get data from your database
-      const user = await prisma.user.findUnique({
+      const room = await prisma.room.findFirst({
         where: {
-          id,
+          OR: [{ name: name }, { id: name }],
         },
         select: {
           id: true,
           name: true,
-          email: true,
-          image: true,
-          UserToRooms: {
+          messages: {
             select: {
-              room: true,
+              author: true,
+              message: true,
             },
           },
-          userOne: true,
-          userTwo: true,
         },
       });
 
-      res.status(200).json(user);
+      res.status(200).json({ ...room });
       break;
     default:
       res.setHeader('Allow', ['GET']);

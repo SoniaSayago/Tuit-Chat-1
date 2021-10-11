@@ -25,7 +25,9 @@ const ContainerBody = styled.div`
   justify-content: space-between;
 `;
 
-export default function MessagePanel({ userSelected, onMessage }) {
+export default function MessagePanel({ userSelected, onMessage, onHandleJoin }) {
+  const isJoined = !userSelected.isChannel ? true : userSelected.isJoined;
+
   return (
     <Container>
       <ContainerHeader>
@@ -41,7 +43,11 @@ export default function MessagePanel({ userSelected, onMessage }) {
 
       <ContainerBody>
         <MessageContainer userSelected={userSelected} />
-        <MessageTextBox onMessage={onMessage} />
+        <MessageTextBox
+          onMessage={onMessage}
+          isJoin={isJoined}
+          onHandleJoin={onHandleJoin}
+        />
       </ContainerBody>
     </Container>
   );

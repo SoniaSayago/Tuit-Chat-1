@@ -28,12 +28,8 @@ export default function MessageContainer({ userSelected }) {
     <ContainerAllMessages>
       {userSelected &&
         userSelected.messages.map((message, index) => {
-          const author = message.fromSelf
-            ? 'Tú'
-            : userSelected.isChannel
-            ? message.sender
-            : userSelected.name;
-          return <Message key={index} message={message.content} author={author} />;
+          const author = message.author?.name || message.author;
+          return <Message key={index} message={message.message} author={author} />;
         })}
       {/* <SeparatorDate /> */}
     </ContainerAllMessages>

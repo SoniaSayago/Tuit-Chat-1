@@ -5,6 +5,7 @@ import { compare } from 'bcrypt';
 import prisma from '../../../lib/database';
 
 let userAccount = null;
+let rooms = null;
 
 const options = {
   adapter: PrismaAdapter(prisma),
@@ -30,6 +31,88 @@ const options = {
           where: {
             email: credentials.email,
           },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            password: true,
+            isActive: true,
+            UserToRooms: {
+              select: {
+                room: {
+                  select: {
+                    id: true,
+                    name: true,
+                    // messages: {
+                    //   select: {
+                    //     author: true,
+                    //     message: true,
+                    //     createdAt: true,
+                    //   },
+                    // },
+                  },
+                },
+              },
+            },
+            userOne: {
+              select: {
+                id: true,
+                userTwo: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                messages: {
+                  select: {
+                    message: true,
+                    author: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                    createdAt: true,
+                  },
+                },
+              },
+            },
+            userTwo: {
+              select: {
+                id: true,
+                userOne: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                messages: {
+                  select: {
+                    message: true,
+                    author: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                    createdAt: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        rooms = await prisma.room.findMany({
+          select: {
+            id: true,
+            name: true,
+            messages: {
+              select: {
+                author: true,
+                message: true,
+              },
+            },
+          },
         });
 
         if (!user) throw new Error('Please sign up');
@@ -42,12 +125,7 @@ const options = {
 
         if (user) {
           // Any object returned will be saved in `user` property of the JWT
-          const userInfo = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            isActive: user.isActive,
-          };
+          const { password, ...userInfo } = user;
           userAccount = userInfo;
           return userInfo;
         } else {
@@ -75,6 +153,7 @@ const options = {
     async session({ session, user, token }) {
       if (userAccount !== null) {
         session.user = userAccount;
+        session.rooms = rooms;
       } else if (
         typeof token.user !== typeof undefined &&
         (typeof session.user === typeof undefined ||

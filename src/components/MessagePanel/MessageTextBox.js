@@ -22,7 +22,7 @@ const FormTextArea = styled.form`
   }
 `;
 
-export default function MessageBox({ onMessage }) {
+export default function MessageBox({ onMessage, isJoin, onHandleJoin }) {
   const [content, setContent] = useState('');
 
   const onChangeContent = (event) => {
@@ -36,14 +36,18 @@ export default function MessageBox({ onMessage }) {
   };
 
   return (
-    <FormTextArea onSubmit={onSubmit}>
-      <textarea
-        rows="3"
-        placeholder="Jot something down"
-        value={content}
-        onChange={onChangeContent}
-      />
-      <input type="submit" value="Send Message" />
-    </FormTextArea>
+    <>
+      {!isJoin && <button onClick={onHandleJoin}>Quiero unirme!</button>}
+      <FormTextArea onSubmit={onSubmit}>
+        <textarea
+          rows="3"
+          placeholder="Jot something down"
+          value={content}
+          onChange={onChangeContent}
+          disabled={!isJoin}
+        />
+        {isJoin && <input type="submit" value="Send Message" />}
+      </FormTextArea>
+    </>
   );
 }

@@ -53,6 +53,7 @@ model User {
   UserToRooms   UserToRooms[]
   userOne       Conversation[]  @relation("userOne")
   userTwo       Conversation[]  @relation("userTwo")
+  messages      Message[]
 }
 
 model Conversation {
@@ -76,12 +77,25 @@ model UserToRooms {
 model Room {
   id            String    @id @default(cuid())
   name          String    @unique
+  isChannel     Boolean   @default(true)
   roomUsers     UserToRooms[]
+  messages      MessageRoom[]
+}
+
+model MessageRoom {
+  id            String        @id @default(cuid())
+  author        String
+  message       String
+  roomId        String
+  room          Room          @relation(fields: [roomId], references: [id])
+  createdAt     DateTime      @default(now())
 }
 
 model Message {
   id              String        @id @default(cuid())
-  message         String        
+  message         String
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id])
   createdAt       DateTime      @default(now())
   conversationId  String
   conversation    Conversation  @relation(fields: [conversationId], references: [id])

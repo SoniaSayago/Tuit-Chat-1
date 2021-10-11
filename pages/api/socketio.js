@@ -1,6 +1,7 @@
 import { Server as ServerIO } from 'socket.io';
-import crypto from 'crypto';
 import InMemorySessionStore from '../../lib/sessionStore';
+
+import baseURL from '../../utils/bseUrls';
 
 export const config = {
   api: {
@@ -9,7 +10,7 @@ export const config = {
 };
 
 const sessionStore = new InMemorySessionStore();
-const randomId = () => crypto.randomBytes(8).toString('hex');
+// const randomId = () => crypto.randomBytes(8).toString('hex');
 
 const socket = async (req, res) => {
   if (!res.socket.server.io) {
@@ -20,6 +21,11 @@ const socket = async (req, res) => {
     const io = new ServerIO(httpServer, {
       path: '/api/socketio',
     });
+
+    // io.configure(function () {
+    //   io.set('transports', ['xhr-polling']);
+    //   io.set('polling duration', 10);
+    // });
 
     io.use((socket, next) => {
       const sessionID = socket.handshake.auth.sessionID;
@@ -59,13 +65,14 @@ const socket = async (req, res) => {
       // emit session details
       socket.emit('session', {
         sessionID: socket.sessionID,
+        name: socket.name,
         ID: socket.ID,
       });
 
       // make the Socket instance join the associated room
       // join the "userID" room
       socket.join(socket.ID);
-      socket.join('ckud67qq400000s95fv33xngb');
+      // socket.join('ckud67qq400000s95fv33xngb');
 
       // fetch existing users
       const users = [];
@@ -90,16 +97,6 @@ const socket = async (req, res) => {
         socket.join(room);
       });
 
-      // Para los rooms
-      socket.on('send message', ({ content, to }) => {
-        socket.to(to).emit('new message', {
-          content,
-          sender: socket.name,
-          from: socket.ID,
-          to,
-        });
-      });
-
       // notify existing users
       // emit to all connected clients, except the socket itself.
       socket.broadcast.emit('user connected', {
@@ -108,11 +105,27 @@ const socket = async (req, res) => {
         connected: true,
       });
 
+      socket.on('create room', ({ name }) => {
+        socket.emit('new room', { name });
+      });
+
+      // Para los rooms
+      socket.on('send message', ({ message, to, author, createdAt }) => {
+        socket.to(to).emit('new message', {
+          message,
+          author,
+          createdAt,
+          to,
+        });
+      });
+
       // forward the private message to the right recipient
-      socket.on('private message', ({ content, to }) => {
+      socket.on('private message', ({ message, author, createdAt, to }) => {
         // broadcast in both the recipient and the sender
         socket.to(to).to(socket.ID).emit('private message', {
-          content,
+          message,
+          author,
+          createdAt,
           from: socket.ID,
           to,
         });
