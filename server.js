@@ -1,7 +1,7 @@
 import express from 'express';
 import * as http from 'http';
 import next from 'next';
-import * as socketio from 'socket.io';
+import { Server } from 'socket.io';
 
 import InMemorySessionStore from './lib/sessionStore';
 
@@ -15,12 +15,13 @@ const sessionStore = new InMemorySessionStore();
 nextApp.prepare().then(async () => {
   const app = express();
   const server = http.createServer(app);
-  const io = new socketio.Server();
-  io.attach(server);
+  const io = new Server(server);
 
-  app.get('/hello', async (_, res) => {
-    res.send('Hello World');
-  });
+  // app.get('/hello', async (_, res) => {
+  //   res.send('Hello World');
+  // });
+
+  app.use(express.json());
 
   io.configure(function () {
     io.set('transports', ['xhr-polling']);
