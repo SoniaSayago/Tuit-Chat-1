@@ -22,10 +22,10 @@ const socket = async (req, res) => {
       path: '/api/socketio',
     });
 
-    io.configure(function () {
-      io.set('transports', ['xhr-polling']);
-      io.set('polling duration', 10);
-    });
+    // io.configure(function () {
+    //   io.set('transports', ['xhr-polling']);
+    //   io.set('polling duration', 10);
+    // });
 
     io.use((socket, next) => {
       const sessionID = socket.handshake.auth.sessionID;
