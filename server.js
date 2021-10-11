@@ -3,10 +3,14 @@ import * as http from 'http';
 import next from 'next';
 import * as socketio from 'socket.io';
 
+import InMemorySessionStore from './lib/sessionStore';
+
 const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
+
+const sessionStore = new InMemorySessionStore();
 
 nextApp.prepare().then(async () => {
   const app = express();

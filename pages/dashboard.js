@@ -28,8 +28,6 @@ export default function Dashboard() {
 
   const { data: session, status } = useSession();
 
-  console.log(session.user);
-
   const conversations = (chats, allRooms, joinedRooms) => {
     const users = chats.map((chat) => {
       const prop = chat?.userOne ? 'userOne' : 'userTwo';
