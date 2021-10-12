@@ -1,9 +1,7 @@
 import io from 'socket.io-client';
+import baseUrl from './utils/bseUrls'
 
-const URL = process.env.NEXT_PUBLIC_VERCEL_URL;
-console.log('--------------------------------------------');
-console.log(URL);
-const socket = io('https://tuit-tuit.herokuapp.com', {
+const socket = io(baseUrl, {
   path: '/api/socketio',
   autoConnect: false,
 });

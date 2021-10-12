@@ -1,7 +1,7 @@
 import socket from '../socket';
 import { useEffect, useState } from 'react';
-import ContactPanel from '../components/ContactPanel';
-import MessagePanel from '../components/MessagePanel';
+import ContactPanel from '../src/components/ContactPanel';
+import MessagePanel from '../src/components/MessagePanel';
 import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
 import baseURL from '../utils/bseUrls';
@@ -16,7 +16,7 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Dashboard() {
   const [myRooms, setMyRooms] = useState([
     {
-      ID: 'ckuhezeu40000w095w3nx9ggt',
+      ID: 'ckuoazouo0000pcwrmgwvep9a',
       name: 'General',
       messages: [],
       isChannel: true,

@@ -18,7 +18,7 @@ export default async function signup(req, res) {
             create: {
               room: {
                 connect: {
-                  id: 'ckuhezeu40000w095w3nx9ggt',
+                  id: 'ckuoazouo0000pcwrmgwvep9a',
                 },
               },
             },
