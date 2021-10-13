@@ -1,0 +1,110 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String?         @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  isActive      String          @default("1") @db.Char(1)
+  UserToRooms   UserToRooms[]
+  userOne       Conversation[]  @relation("userOne")
+  userTwo       Conversation[]  @relation("userTwo")
+  messages      Message[]
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  userOne       User      @relation("userOne", fields: [userOneId], references: [id])
+  userTwo       User      @relation("userTwo", fields: [userTwoId], references: [id])
+  userOneId     String
+  userTwoId     String
+  messages      Message[]
+}
+
+model UserToRooms {
+  userId        String
+  roomId        String
+  user          User      @relation(fields: [userId], references: [id])
+  room          Room      @relation(fields: [roomId], references: [id])
+
+  @@id([userId, roomId])
+}
+
+model Room {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  isChannel     Boolean   @default(true)
+  roomUsers     UserToRooms[]
+  messages      MessageRoom[]
+}
+
+model MessageRoom {
+  id            String        @id @default(cuid())
+  author        String
+  message       String
+  roomId        String
+  room          Room          @relation(fields: [roomId], references: [id])
+  createdAt     DateTime      @default(now())
+}
+
+model Message {
+  id              String        @id @default(cuid())
+  message         String
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id])
+  createdAt       DateTime      @default(now())
+  conversationId  String
+  conversation    Conversation  @relation(fields: [conversationId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

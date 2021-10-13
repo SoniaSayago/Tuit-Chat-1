@@ -5,26 +5,51 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start -p $PORT",
+    "lint": "next lint",
+    "db-up": "docker-compose up -d",
+    "db-status": "docker-compose ps",
+    "db-down": "docker-compose down"
+  },
+  "engines": {
+    "node": "15.x"
+  },
+  "prisma": {
+    "seed": "node ./prisma/seed.js"
   },
   "dependencies": {
     "@heroicons/react": "^1.0.4",
+    "@next-auth/prisma-adapter": "^0.5.4",
+    "@prisma/client": "^3.1.1",
     "@tailwindcss/forms": "^0.3.3",
+<<<<<<< HEAD
     "es6-promise": "^4.2.8",
     "isomorphic-fetch": "^3.0.0",
     "isomorphic-unfetch": "^3.1.0",
+=======
+    "bcrypt": "^5.0.1",
+    "cookie": "^0.4.1",
+    "express": "^4.17.1",
+    "isomorphic-unfetch": "^3.1.0",
+    "jsonwebtoken": "^8.5.1",
+>>>>>>> d785929b5d9ae16f6bf9162f88d8abda732b2a52
     "next": "11.1.2",
+    "next-auth": "^4.0.0-beta.2",
+    "pg": "^8.7.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "socket.io": "^4.2.0",
     "socket.io-client": "^4.2.0",
-    "styled-components": "^5.3.1"
+    "styled-components": "^5.3.1",
+    "swr": "^1.0.1",
+    "tailwindcss": "^2.2.15"
   },
   "devDependencies": {
     "autoprefixer": "^10.3.4",
+    "babel-plugin-styled-components": "^1.13.2",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "postcss": "^8.3.6",
-    "tailwindcss": "^2.2.15"
+    "prisma": "^3.1.1"
   }
 }
