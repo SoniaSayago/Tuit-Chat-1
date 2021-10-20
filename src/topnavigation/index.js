@@ -1,8 +1,7 @@
 import { useToggle } from '../provider/context';
 import Image from 'next/image';
-import PhotoProfile from '../../public/images/1.png';
 
-export default function TopNavigation() {
+export default function TopNavigation({image}) {
   const { toggle } = useToggle();
   return (
     <header className="bg-white h-16 items-center relative shadow w-full z-10 md:h-20">
@@ -62,10 +61,12 @@ export default function TopNavigation() {
               </svg>
             </a>
             <a href="#" className="block relative">
-              <Image
+              <Image 
+                width={50}
+                height={50}
                 alt="profile"
-                src={PhotoProfile}
-                className="h-10 mx-auto object-cover rounded-full w-10"
+                src={image}
+                className="h-10 mx-auto rounded-full w-10"
               />
             </a>
           </div>

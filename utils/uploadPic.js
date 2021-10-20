@@ -1,4 +1,5 @@
 import axios from "axios";
+// import { response } from "express";
 
 const uploadPic = async (media) => {
   try {
@@ -9,6 +10,7 @@ const uploadPic = async (media) => {
 
     const res = await axios.post(process.env.CLOUDINARY_URL, form);
     return res.data.url; //url of uploaded image
+    console.log(res)
   } catch (error) {
     return;
   }

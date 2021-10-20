@@ -29,8 +29,9 @@ export default function MessageContainer({ userSelected }) {
       {userSelected &&
         userSelected.messages.map((message, index) => {
           const author = message.author?.name || message.author;
-          return <Message key={index} message={message.message} author={author} />;
-        })}
+          return <Message image={message.author.image} key={index} message={message.message} author={author} />;
+          console.log(message.author)
+      })}
       {/* <SeparatorDate /> */}
     </ContainerAllMessages>
   );

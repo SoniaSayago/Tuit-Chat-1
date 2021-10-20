@@ -5,11 +5,19 @@ import MessagePanel from '../src/components/MessagePanel';
 import styled from 'styled-components';
 import { useSession, getSession } from 'next-auth/react';
 import baseURL from '../utils/bseUrls';
+import TopNavigation from '../src/topnavigation';
+import Overlay from '../src/provider/overlay';
 
 const ContDashboard = styled.div`
   display: flex;
   height: 100vh;
 `;
+
+const style = {
+  container: `bg-gray-100 h-screen overflow-hidden relative`,
+  main: `h-screen overflow-auto pb-36 pt-4 px-2 md:pb-8 lg:px-4`,
+  mainContainer: `flex flex-col h-screen pl-0 w-full lg:space-y-4`,
+};
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
@@ -28,6 +36,7 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(myRooms[0]);
 
   const { data: session, status } = useSession();
+
 
   const conversations = (chats, allRooms, joinedRooms) => {
     const users = chats.map((chat) => {
@@ -421,19 +430,25 @@ export default function Dashboard() {
 
   return (
     <>
-    <ContDashboard>
-      <ContactPanel
-        users={users}
-        rooms={myRooms}
-        onSelectUser={handleSelectUser}
-        onCreateRoom={createRoom}
-      />
-      <MessagePanel
-        userSelected={selectedUser}
-        onMessage={handleMessage}
-        onHandleJoin={handleJoin}
-      />
-    </ContDashboard>
+    <div className={style.container}>
+      <div className="flex align-items">
+        <Overlay />
+        <ContactPanel mobilePosition="right"
+          users={users}
+          rooms={myRooms}
+          onSelectUser={handleSelectUser}
+          onCreateRoom={createRoom}
+        />
+        <div className={style.mainContainer}>
+          <TopNavigation image={session.user.image} />
+          <MessagePanel
+            userSelected={selectedUser}
+            onMessage={handleMessage}
+            onHandleJoin={handleJoin}
+          />
+        </div>
+      </div>
+    </div>
     </>
   );
 }

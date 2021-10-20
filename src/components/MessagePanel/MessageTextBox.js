@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import InputEmoji from 'react-input-emoji';
 import styled from 'styled-components';
 
 const FormTextArea = styled.form`
@@ -24,30 +25,24 @@ const FormTextArea = styled.form`
 
 export default function MessageBox({ onMessage, isJoin, onHandleJoin }) {
   const [content, setContent] = useState('');
-
-  const onChangeContent = (event) => {
-    setContent(event.target.value);
-  };
-
-  const onSubmit = (event) => {
-    event.preventDefault();
-
-    onMessage(content);
-  };
+  
+  function handleOnEnter (content){
+    console.log('enter', content)
+    onMessage(content)
+  }
 
   return (
     <>
-      {!isJoin && <button onClick={onHandleJoin}>Quiero unirme!</button>}
-      <FormTextArea onSubmit={onSubmit}>
-        <textarea
-          rows="3"
-          placeholder="Jot something down"
+      {!isJoin && <button onClick={onHandleJoin}>Quiero unirme! ✨✔️</button>}
+      <InputEmoji 
           value={content}
-          onChange={onChangeContent}
+          onChange={setContent}
+          onEnter={handleOnEnter}
+          cleanOnEnter
+          onFocus
+          placeholder="type a message 🚀"
           disabled={!isJoin}
         />
-        {isJoin && <input type="submit" value="Send Message" />}
-      </FormTextArea>
     </>
   );
 }

@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 export default async function signup(req, res) {
   if (req.method === 'POST') {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, image, password } = req.body;
 
       const salt = await bcrypt.genSalt(10);
       const passwordEncrypted = await bcrypt.hash(password, salt);
@@ -13,6 +13,7 @@ export default async function signup(req, res) {
         data: {
           name,
           email,
+          image,
           password: passwordEncrypted,
           UserToRooms: {
             create: {

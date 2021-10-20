@@ -115,12 +115,12 @@ const options = {
           },
         });
 
-        if (!user) throw new Error('Please sign up');
+        if (!user) throw new Error('Oops, you are still part of Tuit. Please sign up 🤯');
 
         const checkPassword = await compare(credentials.password, user.password);
 
         if (!checkPassword) {
-          throw new Error('Invalid credentialss');
+          throw new Error(' Invalid credentials, please try again,');
         }
 
         if (user) {
