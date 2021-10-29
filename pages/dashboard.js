@@ -82,7 +82,7 @@ export default function Dashboard() {
       session.user.UserToRooms
     );
 
-    socket.on('session', ({ sessionID, name, ID }) => {
+    socket.on('session', ({ sessionID, name, image, ID }) => {
       // attach the session ID to the next reconnection attempts
       socket.auth = { sessionID };
       // store it in the localStorage
@@ -90,6 +90,7 @@ export default function Dashboard() {
       // save the ID of the user
       socket.ID = ID;
       socket.name = name;
+      socket.image = image;
     });
   }, []);
 
