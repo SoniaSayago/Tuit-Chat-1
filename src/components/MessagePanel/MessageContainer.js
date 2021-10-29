@@ -24,6 +24,7 @@ const ContainerAllMessages = styled.div`
 `;
 
 export default function MessageContainer({ userSelected }) {
+  console.log(userSelected)
   return (
     <ContainerAllMessages>
       {userSelected &&

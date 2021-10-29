@@ -50,12 +50,12 @@ const SettingMessage = styled.div`
   }
 `;
 
-function Message({ message, author}) {
+function Message({ message, image, author}) {
   return (
     <ContainerMessage className="hover:bg-purple-200">
       <PhotoProfile>
         <Image 
-          src={avatar}                
+          src={image||avatar}                
           width={36}
           height={36} 
           alt="Picture of the author" />

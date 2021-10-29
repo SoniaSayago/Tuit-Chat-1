@@ -70,6 +70,7 @@ const options = {
                     author: {
                       select: {
                         name: true,
+                        image: true,
                       },
                     },
                     createdAt: true,
@@ -92,6 +93,7 @@ const options = {
                     author: {
                       select: {
                         name: true,
+                        image: true,
                       },
                     },
                     createdAt: true,

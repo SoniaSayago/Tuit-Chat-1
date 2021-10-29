@@ -24,7 +24,7 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Dashboard() {
   const [myRooms, setMyRooms] = useState([
     {
-      ID: 'ckuoazouo0000pcwrmgwvep9a',
+      ID: 'ckuo9g7jj0000mkwrvsc26uky',
       name: 'General',
       messages: [],
       isChannel: true,
@@ -36,7 +36,7 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(myRooms[0]);
 
   const { data: session, status } = useSession();
-
+  console.log(session)
 
   const conversations = (chats, allRooms, joinedRooms) => {
     const users = chats.map((chat) => {
