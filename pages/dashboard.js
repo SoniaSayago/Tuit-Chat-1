@@ -71,9 +71,9 @@ export default function Dashboard() {
     const sessionID = localStorage.getItem('sessionID');
 
     if (sessionID) {
-      socket.auth = { name: session.user.name, ID: session.user.id, sessionID };
+      socket.auth = { name: session.user.name, image: session.user.image, ID: session.user.id, sessionID };
     } else {
-      socket.auth = { name: session.user.name, ID: session.user.id };
+      socket.auth = { name: session.user.name, image: session.user.image, ID: session.user.id };
     }
 
     conversations(
@@ -330,7 +330,7 @@ export default function Dashboard() {
       .then(() => {
         socket.emit('private message', {
           message: content,
-          author: { name: socket.name },
+          author: { name: socket.name, image: socket.image },
           to: selectedUser.ID,
           createdAt: '2020-07-01',
         });
