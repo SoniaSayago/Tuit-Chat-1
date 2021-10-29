@@ -52,6 +52,7 @@ export default async function userHandler(req, res) {
                   author: {
                     select: {
                       name: true,
+                      image: true,
                     },
                   },
                   createdAt: true,
@@ -74,6 +75,7 @@ export default async function userHandler(req, res) {
                   author: {
                     select: {
                       name: true,
+                      image: true,
                     },
                   },
                   createdAt: true,

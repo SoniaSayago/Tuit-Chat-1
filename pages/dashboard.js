@@ -35,6 +35,7 @@ export default function Dashboard() {
       return {
         ID: chat[prop].id,
         conversation: chat.id,
+        image: chat[prop].image,
         name: chat[prop].name,
         messages: chat.messages,
         connected: false,
