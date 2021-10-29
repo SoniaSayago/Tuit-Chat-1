@@ -24,15 +24,16 @@ const ContainerAllMessages = styled.div`
 `;
 
 export default function MessageContainer({ userSelected }) {
-  console.log(userSelected)
+  console.log(userSelected.messages);
+  console.log('*********************');
   return (
     <ContainerAllMessages>
       {userSelected &&
         userSelected.messages.map((message, index) => {
           const author = message.author?.name || message.author;
-          return <Message image={message.author.image} key={index} message={message.message} author={author} />;
-          console.log(message.author)
-      })}
+          const image = message.author?.image || '';
+          return <Message key={index} message={message.message} author={author} />;
+        })}
       {/* <SeparatorDate /> */}
     </ContainerAllMessages>
   );

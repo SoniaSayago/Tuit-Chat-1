@@ -30,6 +30,7 @@ const socket = async (req, res) => {
     io.use((socket, next) => {
       const sessionID = socket.handshake.auth.sessionID;
       const name = socket.handshake.auth.name;
+      const image = socket.handshake.image;
       const ID = socket.handshake.auth.ID;
 
       if (sessionID) {
@@ -39,6 +40,7 @@ const socket = async (req, res) => {
           socket.sessionID = sessionID;
           socket.ID = session.ID;
           socket.name = session.name;
+          socket.image = session.image;
           return next();
         }
       }
@@ -51,6 +53,7 @@ const socket = async (req, res) => {
       socket.sessionID = ID;
       socket.ID = ID;
       socket.name = name;
+      socket.image = image;
       next();
     });
 
@@ -59,6 +62,7 @@ const socket = async (req, res) => {
       sessionStore.saveSession(socket.sessionID, {
         ID: socket.ID,
         name: socket.name,
+        image: socket.image,
         connected: true,
       });
 
@@ -66,6 +70,7 @@ const socket = async (req, res) => {
       socket.emit('session', {
         sessionID: socket.sessionID,
         name: socket.name,
+        image: socket.image,
         ID: socket.ID,
       });
 
@@ -80,6 +85,7 @@ const socket = async (req, res) => {
         users.push({
           ID: session.ID,
           name: session.name,
+          image: session.image,
           connected: session.connected,
         });
       });
@@ -102,6 +108,7 @@ const socket = async (req, res) => {
       socket.broadcast.emit('user connected', {
         ID: socket.ID,
         name: socket.name,
+        image: socket.image,
         connected: true,
       });
 
@@ -144,6 +151,7 @@ const socket = async (req, res) => {
           sessionStore.saveSession(socket.sessionID, {
             ID: socket.ID,
             name: socket.name,
+            image: socket.image,
             connected: false,
           });
         }
