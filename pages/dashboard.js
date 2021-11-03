@@ -24,7 +24,7 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Dashboard() {
   const [myRooms, setMyRooms] = useState([
     {
-      ID: 'ckuo9g7jj0000mkwrvsc26uky',
+      ID: 'ckuoazouo0000pcwrmgwvep9a',
       name: 'General',
       messages: [],
       isChannel: true,
